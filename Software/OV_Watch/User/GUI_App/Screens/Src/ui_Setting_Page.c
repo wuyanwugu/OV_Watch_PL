@@ -26,10 +26,10 @@ static lv_timer_t *ui_Setting_PageTimer = NULL;
 static uint8_t ui_TimeHourValue = 12;
 static uint8_t ui_TimeMinuteValue = 0;
 /*Í¼Æ¬*/
-LV_IMG_DECLARE(ui_img_783175834);    // assets/ÉèÖÃ-ÏÔÊ¾ÓëÁÁ¶È.png
-LV_IMG_DECLARE(ui_img_1402427003);    // assets/×´Ì¬-Ê¡µçÄ£Ê½.png
+LV_IMG_DECLARE(ui_img_783175834);    // assets/ï¿½ï¿½ï¿½ï¿½-ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.png
+LV_IMG_DECLARE(ui_img_1402427003);    // assets/×´Ì¬-Ê¡ï¿½ï¿½Ä£Ê½.png
 LV_IMG_DECLARE(ui_img_1177623285);    // assets/ÏµÍ³.png
-LV_IMG_DECLARE(ui_img_2092788291);    // assets/¹ØÓÚÎÒÃÇ.png
+LV_IMG_DECLARE(ui_img_2092788291);    // assets/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.png
 /**
   * @brief   Setting page timer callback (500ms period)
   * @param  timer: LVGL timer
@@ -108,6 +108,7 @@ void ui_event_Settingcard3_Settingcard(lv_event_t * e)
 
 void ui_Setting_Page_screen_init(void)
 {
+    char buf[8];
     ui_Setting_Page = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Setting_Page, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_Setting_Page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -189,13 +190,19 @@ void ui_Setting_Page_screen_init(void)
     lv_obj_set_style_text_font(ui_Label10, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     /* Time display: Hour:Minute (top right) */
+    HW_DateTimeTypeDef DateTime;
+    HWInterface.RealTimeClock.GetTimeDate(&DateTime);
+    ui_TimeHourValue = DateTime.Hours;
+    ui_TimeMinuteValue = DateTime.Minutes;
+
     ui_TimeHourLabel = lv_label_create(ui_Setting_Page);
     lv_obj_set_width(ui_TimeHourLabel, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_TimeHourLabel, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_TimeHourLabel, -38);
     lv_obj_set_y(ui_TimeHourLabel, 6);
     lv_obj_set_align(ui_TimeHourLabel, LV_ALIGN_TOP_RIGHT);
-    lv_label_set_text(ui_TimeHourLabel, "12");
+    sprintf(buf, "%02d", ui_TimeHourValue);
+    lv_label_set_text(ui_TimeHourLabel, buf);
     lv_obj_set_style_text_font(ui_TimeHourLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_TimeColonLabel = lv_label_create(ui_Setting_Page);
@@ -213,7 +220,8 @@ void ui_Setting_Page_screen_init(void)
     lv_obj_set_x(ui_TimeMinuteLabel, -5);
     lv_obj_set_y(ui_TimeMinuteLabel, 6);
     lv_obj_set_align(ui_TimeMinuteLabel, LV_ALIGN_TOP_RIGHT);
-    lv_label_set_text(ui_TimeMinuteLabel, "00");
+    sprintf(buf, "%02d", ui_TimeMinuteValue);
+    lv_label_set_text(ui_TimeMinuteLabel, buf);
     lv_obj_set_style_text_font(ui_TimeMinuteLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Settingcard, ui_event_Settingcard_Settingcard, LV_EVENT_ALL, NULL);

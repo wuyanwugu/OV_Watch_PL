@@ -107,6 +107,7 @@ void ui_event_Switch1(lv_event_t * e)
 
 void ui_Setting_Dis_Bri_Page_screen_init(void)
 {
+    char buf[16];
     ui_Setting_Dis_Bri_Page = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Setting_Dis_Bri_Page, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_Setting_Dis_Bri_Page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -215,7 +216,12 @@ void ui_Setting_Dis_Bri_Page_screen_init(void)
     lv_obj_set_x(ui_Time4, -5);
     lv_obj_set_y(ui_Time4, 6);
     lv_obj_set_align(ui_Time4, LV_ALIGN_TOP_RIGHT);
-    lv_label_set_text(ui_Time4, "10:00");
+    HW_DateTimeTypeDef DateTime;
+    HWInterface.RealTimeClock.GetTimeDate(&DateTime);
+    ui_TimeHourValue = DateTime.Hours;
+    ui_TimeMinuteValue = DateTime.Minutes;
+    sprintf(buf, "%02d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
+    lv_label_set_text(ui_Time4, buf);
     lv_obj_set_style_text_font(ui_Time4, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Settingcard8, ui_event_Settingcard8, LV_EVENT_ALL, NULL);

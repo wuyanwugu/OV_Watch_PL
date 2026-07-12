@@ -50,7 +50,7 @@ void ui_event_Panel5(lv_event_t * e)
         Page_Back(LV_SCR_LOAD_ANIM_MOVE_RIGHT, 250, 0);
     }
 }
-//省电模式（未实现）
+//省锟斤拷模式锟斤拷未实锟街ｏ拷
 void ui_event_Switch2(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -65,6 +65,7 @@ void ui_event_Switch2(lv_event_t * e)
 
 void ui_Setting_Barttery_Saver_Page_screen_init(void)
 {
+    char buf[16];
     ui_Setting_Barttery_Saver_Page = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Setting_Barttery_Saver_Page, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_Setting_Barttery_Saver_Page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -122,7 +123,12 @@ void ui_Setting_Barttery_Saver_Page_screen_init(void)
     lv_obj_set_x(ui_Time5, -5);
     lv_obj_set_y(ui_Time5, 6);
     lv_obj_set_align(ui_Time5, LV_ALIGN_TOP_RIGHT);
-    lv_label_set_text(ui_Time5, "10:00");
+    HW_DateTimeTypeDef DateTime;
+    HWInterface.RealTimeClock.GetTimeDate(&DateTime);
+    ui_TimeHourValue = DateTime.Hours;
+    ui_TimeMinuteValue = DateTime.Minutes;
+    sprintf(buf, "%02d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
+    lv_label_set_text(ui_Time5, buf);
     lv_obj_set_style_text_font(ui_Time5, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Switch2, ui_event_Switch2, LV_EVENT_ALL, NULL);

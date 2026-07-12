@@ -282,3 +282,137 @@ void ui_SensorPage_deinit(void)
 - 解决方案：**延迟删除**（动画结束后）或**禁用动画**（直接用 `lv_scr_load`）
 - `prvTaskExitError` 出现在栈回溯中是 FreeRTOS 栈溢出的典型标志，即使修改了代码也要增大栈
 - 内存池损坏是**延迟爆发**的：破坏发生在 A 时刻，崩溃出现在 B 时刻，容易误判为 B 处代码有问题
+
+### 问题4：Bug Report: 页面二次进入后时间/电量显示冻结在默认值
+
+###### 现象
+
+从 HOME 页面切换到 Menu 页面，第一次进入时电量和时间显示正常。返回 HOME 后再次进入 Menu 页面，时间显示固定为初始默认值 `"10:00"`，电量显示为 `"0%"`。只有当时间跨分钟后（如 12:00 → 12:01）标签才会更新。除 HOME 页面外，Setting、About、Battery-Saver、Display&Brightness、System&Updates、Stopwatch 等页面均存在相同问题。
+
+###### 直接原因
+
+每个页面的 `.c` 文件顶部定义了文件作用域的 `static` 缓存变量，用于定时器回调中做"脏检查"——仅当值变化时才更新 LVGL 标签，以减少不必要的 `lv_label_set_text()` 调用：
+
+```c
+// ui_Menu_Page.c
+static uint8_t ui_TimeHourValue = 12;
+static uint8_t ui_TimeMinuteValue = 0;
+static uint8_t ui_BatteryValue1 = 0;
+```
+
+定时器回调逻辑：
+
+```c
+if (ui_TimeHourValue != DateTime.Hours || ui_TimeMinuteValue != DateTime.Minutes)
+{
+    ui_TimeHourValue = DateTime.Hours;
+    ui_TimeMinuteValue = DateTime.Minutes;
+    sprintf(buf, "%2d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
+    lv_label_set_text(ui_Time2, buf);
+}
+```
+
+但 `deinit()` 函数**只删除定时器和置空控件指针，未重置这些静态缓存变量**。导致以下 Bug 路径：
+
+| 步骤 | 操作 | 缓存变量 | 标签显示 |
+| ---- | ---- | -------- | -------- |
+| 1 | 首次进入 Menu | `{12, 0}`（初始值） | `"10:00"`（默认） |
+| 2 | 定时器触发（500ms 后） | RTC=14:30，12≠14 → 更新 → `{14, 30}` | `"14:30"` |
+| 3 | 返回 HOME | deinit()，变量**保持** `{14, 30}` | — |
+| 4 | 再次进入 Menu | `{14, 30}`（旧值保留） | `"10:00"`（重新创建为默认） |
+| 5 | 定时器触发 | RTC=14:30，`{14, 30}` == RTC → **不更新** | **仍显示 `"10:00"`** |
+
+电量同理：`ui_BatteryValue1` 保留旧值，若电量未变化则标签永远显示默认的 `"0%"`。此外 Menu 页面的 `bat_cnt` 计数器是函数内 `static` 局部变量，deinit 后其值保留，导致电量读取延迟最多 10 秒。
+
+###### 为什么 HOME 页面不受影响
+
+`PageManager.c` 的 `switch_to()` 函数中：
+
+```c
+if (old_page != NULL && old_page != stack.home_page)
+    old_page->deinit();
+if (new_page != stack.home_page)
+    new_page->init();
+```
+
+HOME 作为栈底页面**从不被 deinit/重新 init**，其静态缓存变量始终与屏幕显示同步，不会出现缓存与显示不一致的问题。
+
+###### 受影响页面（7 个）
+
+| 文件 | 受影响的显示 |
+| ---- | ------------ |
+| `ui_Menu_Page.c` | 时间 + 电量 + bat_cnt |
+| `ui_Setting_Page.c` | 时间 |
+| `ui_Setting_About_Page.c` | 时间 |
+| `ui_Setting_Barttery_Saver_Page.c` | 时间 |
+| `ui_Setting_Dis_Bri_Page.c` | 时间 |
+| `ui_Setting__SystemUpdates_Page.c` | 时间 |
+| `ui_Time_Count_Page.c` | 时间 |
+
+###### 修复措施
+
+在每个页面的 `init()` 函数中，标签创建后立即读取硬件（RTC 时间、电池电量），用真实值设置标签文本并同步更新缓存变量。deinit 中不做缓存重置——缓存保留上次的值，下次 init 直接用硬件最新值覆盖。
+
+**1. init 中读 RTC 硬件并设置时间标签**
+
+以 Menu 页面为例，标签创建后立即读取 RTC 并用真实时间设置文本：
+
+```c
+void ui_Menu_Page_screen_init(void)
+{
+    char buf[16];
+    // ... 创建控件 ...
+
+    // 读取 RTC 真实时间，同步缓存，设置标签
+    HW_DateTimeTypeDef DateTime;
+    HWInterface.RealTimeClock.GetTimeDate(&DateTime);
+    ui_TimeHourValue = DateTime.Hours;
+    ui_TimeMinuteValue = DateTime.Minutes;
+    sprintf(buf, "%2d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
+    lv_label_set_text(ui_Time2, buf);
+
+    // ... 创建定时器 ...
+    ui_Menu_PageTimer = lv_timer_create(Menu_Page_timer_cb, 500, NULL);
+}
+```
+
+其余 6 个页面同理，在时间标签创建后读取 RTC 硬件并设置文本。
+
+**2. init 中读电池硬件并设置电量标签（Menu 页面）**
+
+Menu 页面额外读取电池电量，设置电量标签和进度条：
+
+```c
+    // 读取电池真实电量，同步缓存，设置标签
+    ui_BatteryValue1 = HWInterface.Power.power_remain;
+    sprintf(buf, "%d%%", ui_BatteryValue1);
+    lv_label_set_text(ui_battery2, buf);
+    lv_bar_set_value(ui_Bar1, ui_BatteryValue1, LV_ANIM_OFF);
+```
+
+**3. Menu 页面 bat_cnt 提升为文件作用域变量**
+
+原 `bat_cnt` 是定时器回调函数内的 `static` 局部变量，无法在外部管理。将其提升为文件作用域变量 `ui_Menu_BatCnt`，保持与定时器回调的一致性：
+
+```c
+// 修改前（函数内 static）
+static void Menu_Page_timer_cb(lv_timer_t *timer) {
+    static uint8_t bat_cnt = 19;
+    if (++bat_cnt >= 20) { ... }
+}
+
+// 修改后（文件作用域）
+static uint8_t ui_Menu_BatCnt = 19;    // 文件顶部
+
+static void Menu_Page_timer_cb(lv_timer_t *timer) {
+    if (++ui_Menu_BatCnt >= 20) { ... }
+}
+```
+
+###### 总结
+
+- 根本问题：init 中用硬编码默认值（`"10:00"`、`"100%"`）创建标签，而缓存变量保留了上次的值，定时器做脏检查时认为"值没变"而不更新
+- 解决思路：**init 直接读硬件**，用真实值创建标签并同步缓存，从源头消除"默认值 ≠ 真实值"的不一致
+- `static` 缓存变量的生命周期跨越页面 deinit/init 周期，deinit 后其值不会自动恢复，必须在 init 中用硬件值覆盖
+- HOME 页面因永不 deinit 而天然免疫此问题，但这恰恰掩盖了其他页面的隐患
+- 此类 Bug 不会崩溃，表现为"显示不更新"，容易被误判为 RTC 读取问题或 LVGL 刷新问题

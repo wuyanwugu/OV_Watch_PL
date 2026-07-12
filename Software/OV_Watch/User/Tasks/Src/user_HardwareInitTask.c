@@ -38,19 +38,19 @@
 /* Private variables ---------------------------------------------------------*/
 extern uint8_t HardInt_receive_str[25];
 /* Private function prototypes -----------------------------------------------*/
-void LED_Port_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
+// void LED_Port_Init(void)
+// {
+//   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+//   /* GPIO Ports Clock Enable */
+//   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-	/*Configure GPIO pin : PB15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_15;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-}
+// 	/*Configure GPIO pin : PB15 */
+//   GPIO_InitStruct.Pin = GPIO_PIN_15;
+//   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//   GPIO_InitStruct.Pull = GPIO_NOPULL;
+//   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+// }
 
 /**
   * @brief  hardwares init task
@@ -63,7 +63,7 @@ void HardwareInitTask(void *argument)
 	{
     vTaskSuspendAll();
 
-     LED_Port_Init();
+    //  LED_Port_Init();
      
     // RTC Wake timer
     if(HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 2000, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)

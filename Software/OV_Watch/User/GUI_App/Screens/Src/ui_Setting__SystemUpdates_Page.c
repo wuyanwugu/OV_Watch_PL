@@ -77,6 +77,7 @@ void ui_event_Settingcard14(lv_event_t * e)
 
 void ui_Setting__SystemUpdates_Page_screen_init(void)
 {
+    char buf[16];
     ui_Setting__SystemUpdates_Page = lv_obj_create(NULL);
     lv_obj_clear_flag(ui_Setting__SystemUpdates_Page, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_color(ui_Setting__SystemUpdates_Page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -156,7 +157,12 @@ void ui_Setting__SystemUpdates_Page_screen_init(void)
     lv_obj_set_x(ui_Time6, -5);
     lv_obj_set_y(ui_Time6, 6);
     lv_obj_set_align(ui_Time6, LV_ALIGN_TOP_RIGHT);
-    lv_label_set_text(ui_Time6, "10:00");
+    HW_DateTimeTypeDef DateTime;
+    HWInterface.RealTimeClock.GetTimeDate(&DateTime);
+    ui_TimeHourValue = DateTime.Hours;
+    ui_TimeMinuteValue = DateTime.Minutes;
+    sprintf(buf, "%02d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
+    lv_label_set_text(ui_Time6, buf);
     lv_obj_set_style_text_font(ui_Time6, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Settingcard4, ui_event_Settingcard4, LV_EVENT_ALL, NULL);

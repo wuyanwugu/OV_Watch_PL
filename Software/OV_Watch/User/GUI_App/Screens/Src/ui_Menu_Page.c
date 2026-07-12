@@ -13,154 +13,164 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-bool g_bt_icon_visible = false;//蓝牙flag
-bool g_Sleep = false;//熄屏flag
-bool g_flashlight_on = false;//手电筒flag
-lv_obj_t * ui_Menu_Page = NULL;
+bool g_bt_icon_visible = false; // 蓝牙flag
+bool g_Sleep = false;           // 熄屏flag
+bool g_flashlight_on = false;   // 手电筒flag
+lv_obj_t *ui_Menu_Page = NULL;
 Page_t Page_Menu = {ui_Menu_Page_screen_init, ui_Menu_Page_deinit, &ui_Menu_Page};
-lv_obj_t * ui_Bar1 = NULL;
-lv_obj_t * ui_battery2 = NULL;
-lv_obj_t * ui_Date3 = NULL;
-lv_obj_t * ui_Panel2 = NULL;
-lv_obj_t * ui_APP = NULL;
-lv_obj_t * ui_APP2 = NULL;
-lv_obj_t * ui_APP1 = NULL;
-lv_obj_t * ui_APP3 = NULL;
-lv_obj_t * ui_APP4 = NULL;
-lv_obj_t * ui_APP5 = NULL;
-lv_obj_t * ui_Date4 = NULL;
-lv_obj_t * ui_Time2 = NULL;
-lv_obj_t * ui_Image3 = NULL;
+lv_obj_t *ui_Bar1 = NULL;
+lv_obj_t *ui_battery2 = NULL;
+lv_obj_t *ui_Date3 = NULL;
+lv_obj_t *ui_Panel2 = NULL;
+lv_obj_t *ui_APP = NULL;
+lv_obj_t *ui_APP2 = NULL;
+lv_obj_t *ui_APP1 = NULL;
+lv_obj_t *ui_APP3 = NULL;
+lv_obj_t *ui_APP4 = NULL;
+lv_obj_t *ui_APP5 = NULL;
+lv_obj_t *ui_Date4 = NULL;
+lv_obj_t *ui_Time2 = NULL;
+lv_obj_t *ui_Image3 = NULL;
 static lv_timer_t *ui_Menu_PageTimer = NULL;
 static uint8_t ui_BatteryValue1 = 0;
 static uint8_t ui_TimeHourValue = 12;
 static uint8_t ui_TimeMinuteValue = 0;
+static uint8_t ui_Menu_BatCnt = 19;
 /*图片*/
-LV_IMG_DECLARE(ui_img_1732147085);    // assets/秒表.png
-LV_IMG_DECLARE(ui_img_434552105);    // assets/手电筒_关.png
-LV_IMG_DECLARE(ui_img_1178775628);    // assets/手电筒_开.png
-LV_IMG_DECLARE(ui_img_1194381817);    // assets/15A亮度+.png
-LV_IMG_DECLARE(ui_img_1887403499);    // assets/设置.png
-LV_IMG_DECLARE(ui_img_754277884);    // assets/蓝牙1.png
-LV_IMG_DECLARE(ui_img_1630624692);    // assets/电源.png
+LV_IMG_DECLARE(ui_img_1732147085); // assets/秒表.png
+LV_IMG_DECLARE(ui_img_434552105);  // assets/手电筒_关.png
+LV_IMG_DECLARE(ui_img_1178775628); // assets/手电筒_开.png
+LV_IMG_DECLARE(ui_img_1194381817); // assets/15A亮度+.png
+LV_IMG_DECLARE(ui_img_1887403499); // assets/设置.png
+LV_IMG_DECLARE(ui_img_754277884);  // assets/蓝牙1.png
+LV_IMG_DECLARE(ui_img_1630624692); // assets/电源.png
 /**
-  * @brief  Menu page timer callback (2s period)
-  * @param  timer: LVGL timer
-  * @retval None
-  */
+ * @brief  Menu page timer callback (500ms period)
+ * @param  timer: LVGL timer
+ * @retval None
+ */
 static void Menu_Page_timer_cb(lv_timer_t *timer)
 {
-  char buf[16];
-  //Time update 500ms
-   HW_DateTimeTypeDef DateTime;
-  HWInterface.RealTimeClock.GetTimeDate(&DateTime);
-  
-  if(ui_TimeHourValue != DateTime.Hours || ui_TimeMinuteValue != DateTime.Minutes)
-  {
-    ui_TimeHourValue = DateTime.Hours;
-    ui_TimeMinuteValue = DateTime.Minutes;
-    sprintf(buf, "%2d:%02d", ui_TimeHourValue,ui_TimeMinuteValue);
-    lv_label_set_text(ui_Time2, buf);
-  }
-  
+    char buf[16];
+    // Time update 500ms
+    HW_DateTimeTypeDef DateTime;
+    HWInterface.RealTimeClock.GetTimeDate(&DateTime);
 
-  // Battery update (every 10 seconds = 20 * 500ms, first read immediately)
-  uint8_t bat = HWInterface.Power.power_remain;
-  static uint8_t bat_cnt = 19;
-  if(++bat_cnt >= 20)
-  {
-    bat_cnt = 0;
-    bat = HWInterface.Power.power_remain;
-    if(ui_BatteryValue1 != bat)
+    if (ui_TimeHourValue != DateTime.Hours || ui_TimeMinuteValue != DateTime.Minutes)
     {
-      ui_BatteryValue1 = bat;
-      sprintf(buf, "%d%%", ui_BatteryValue1);
-      lv_label_set_text(ui_battery2, buf);
-      lv_bar_set_value(ui_Bar1, ui_BatteryValue1, LV_ANIM_OFF);
+        ui_TimeHourValue = DateTime.Hours;
+        ui_TimeMinuteValue = DateTime.Minutes;
+        sprintf(buf, "%2d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
+        lv_label_set_text(ui_Time2, buf);
     }
-  }
 
+    // Battery update (every 10 seconds = 20 * 500ms, first read immediately)
+    uint8_t bat = HWInterface.Power.power_remain;
+    if (++ui_Menu_BatCnt >= 20)
+    {
+        ui_Menu_BatCnt = 0;
+        bat = HWInterface.Power.power_remain;
+        if (ui_BatteryValue1 != bat)
+        {
+            ui_BatteryValue1 = bat;
+            sprintf(buf, "%d%%", ui_BatteryValue1);
+            lv_label_set_text(ui_battery2, buf);
+            lv_bar_set_value(ui_Bar1, ui_BatteryValue1, LV_ANIM_OFF);
+        }
+    }
 }
 
 static void restore_checkable_state(lv_obj_t *obj, bool checked)
 {
-    if (checked) lv_obj_add_state(obj, LV_STATE_CHECKED);
-    else lv_obj_clear_state(obj, LV_STATE_CHECKED);
+    if (checked)
+        lv_obj_add_state(obj, LV_STATE_CHECKED);
+    else
+        lv_obj_clear_state(obj, LV_STATE_CHECKED);
 }
 
 // event funtions
-void ui_event_Menu_Page(lv_event_t * e)
+void ui_event_Menu_Page(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
+    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP)
+    {
         lv_indev_wait_release(lv_indev_get_act());
         Page_Back(LV_SCR_LOAD_ANIM_MOVE_TOP, 250, 0);
     }
 }
-//电量
+// 电量
 
-//熄屏
-void ui_event_APP_APP(lv_event_t * e)
+// 熄屏
+void ui_event_APP_APP(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_CLICKED) {
+    if (event_code == LV_EVENT_CLICKED)
+    {
         g_Sleep = true;
     }
 }
-//蓝牙
-void ui_event_APP2_APP(lv_event_t * e)
+// 蓝牙
+void ui_event_APP2_APP(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
+    lv_obj_t *target = lv_event_get_target(e);
 
-    if(event_code == LV_EVENT_CLICKED) {
+    if (event_code == LV_EVENT_CLICKED)
+    {
         g_bt_icon_visible = lv_obj_has_state(target, LV_STATE_CHECKED);
-        if (g_bt_icon_visible) {
+        if (g_bt_icon_visible)
+        {
             lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(ui_Image1, LV_OBJ_FLAG_HIDDEN);
-        } else {
+        }
+        else
+        {
             lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(ui_Image1, LV_OBJ_FLAG_HIDDEN);
         }
     }
 }
-//秒表
-void ui_event_APP1_APP(lv_event_t * e)
+// 秒表
+void ui_event_APP1_APP(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_CLICKED) {
+    if (event_code == LV_EVENT_CLICKED)
+    {
         Page_Load(&Page_Time_Count, LV_SCR_LOAD_ANIM_FADE_ON, 100, 0);
     }
 }
-//手电筒
-void ui_event_APP3_APP(lv_event_t * e)
+// 手电筒
+void ui_event_APP3_APP(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
+    lv_obj_t *target = lv_event_get_target(e);
 
-    if(event_code == LV_EVENT_VALUE_CHANGED) {
+    if (event_code == LV_EVENT_VALUE_CHANGED)
+    {
         g_flashlight_on = lv_obj_has_state(target, LV_STATE_CHECKED);
         // 用户可在此处添加手电筒硬件控制
     }
 }
-//屏幕亮度
-void ui_event_APP4_APP(lv_event_t * e)
+// 屏幕亮度
+void ui_event_APP4_APP(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_CLICKED) {
+    if (event_code == LV_EVENT_CLICKED)
+    {
         Page_Load(&Page_Brightness, LV_SCR_LOAD_ANIM_FADE_ON, 100, 0);
     }
 }
-//设置
-void ui_event_APP5_APP(lv_event_t * e)
+// 设置
+void ui_event_APP5_APP(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_CLICKED) {
+    if (event_code == LV_EVENT_CLICKED)
+    {
         Page_Load(&Page_Setting, LV_SCR_LOAD_ANIM_FADE_ON, 100, 0);
     }
 }
@@ -169,12 +179,13 @@ void ui_event_APP5_APP(lv_event_t * e)
 
 void ui_Menu_Page_screen_init(void)
 {
+    char buf[16];
     ui_Menu_Page = lv_obj_create(NULL);
-    lv_obj_clear_flag(ui_Menu_Page, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_clear_flag(ui_Menu_Page, LV_OBJ_FLAG_SCROLLABLE); /// Flags
     lv_obj_set_style_bg_color(ui_Menu_Page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Bar1 = lv_bar_create(ui_Menu_Page);
-    lv_bar_set_value(ui_Bar1, 100, LV_ANIM_OFF);
+    lv_bar_set_value(ui_Bar1, ui_BatteryValue1, LV_ANIM_OFF);
     lv_bar_set_start_value(ui_Bar1, 0, LV_ANIM_OFF);
     lv_obj_set_width(ui_Bar1, 35);
     lv_obj_set_height(ui_Bar1, 10);
@@ -188,17 +199,19 @@ void ui_Menu_Page_screen_init(void)
     lv_obj_set_style_bg_opa(ui_Bar1, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
     ui_battery2 = lv_label_create(ui_Menu_Page);
-    lv_obj_set_width(ui_battery2, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_battery2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_width(ui_battery2, LV_SIZE_CONTENT);  /// 1
+    lv_obj_set_height(ui_battery2, LV_SIZE_CONTENT); /// 1
     lv_obj_set_x(ui_battery2, -62);
     lv_obj_set_y(ui_battery2, -130);
     lv_obj_set_align(ui_battery2, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_battery2, "100%");
-    lv_obj_add_flag(ui_battery2, LV_OBJ_FLAG_CLICKABLE);     /// Flags
+    ui_BatteryValue1 = HWInterface.Power.power_remain;
+    sprintf(buf, "%d%%", ui_BatteryValue1);
+    lv_label_set_text(ui_battery2, buf);
+    lv_obj_add_flag(ui_battery2, LV_OBJ_FLAG_CLICKABLE); /// Flags
 
     ui_Date3 = lv_label_create(ui_Menu_Page);
-    lv_obj_set_width(ui_Date3, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Date3, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_width(ui_Date3, LV_SIZE_CONTENT);  /// 1
+    lv_obj_set_height(ui_Date3, LV_SIZE_CONTENT); /// 1
     lv_obj_set_x(ui_Date3, 0);
     lv_obj_set_y(ui_Date3, -80);
     lv_obj_set_align(ui_Date3, LV_ALIGN_CENTER);
@@ -213,7 +226,7 @@ void ui_Menu_Page_screen_init(void)
     lv_obj_set_align(ui_Panel2, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_Panel2, LV_FLEX_FLOW_ROW_WRAP_REVERSE);
     lv_obj_set_flex_align(ui_Panel2, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_clear_flag(ui_Panel2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_clear_flag(ui_Panel2, LV_OBJ_FLAG_SCROLLABLE); /// Flags
     lv_obj_set_style_bg_color(ui_Panel2, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_Panel2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_color(ui_Panel2, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -231,7 +244,7 @@ void ui_Menu_Page_screen_init(void)
     ui_APP2 = ui_APP_create(ui_Panel2);
     lv_obj_set_x(ui_APP2, 499);
     lv_obj_set_y(ui_APP2, 47);
-    lv_obj_add_flag(ui_APP2, LV_OBJ_FLAG_CHECKABLE);     /// Flags
+    lv_obj_add_flag(ui_APP2, LV_OBJ_FLAG_CHECKABLE); /// Flags
     lv_obj_set_style_bg_img_src(ui_APP2, &ui_img_754277884, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_img_recolor(ui_APP2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_img_recolor_opa(ui_APP2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -249,7 +262,7 @@ void ui_Menu_Page_screen_init(void)
     ui_APP3 = ui_APP_create(ui_Panel2);
     lv_obj_set_x(ui_APP3, 499);
     lv_obj_set_y(ui_APP3, 47);
-    lv_obj_add_flag(ui_APP3, LV_OBJ_FLAG_CHECKABLE);     /// Flags
+    lv_obj_add_flag(ui_APP3, LV_OBJ_FLAG_CHECKABLE); /// Flags
     lv_obj_set_style_bg_img_src(ui_APP3, LV_SYMBOL_EYE_CLOSE, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_img_recolor(ui_APP3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_img_recolor_opa(ui_APP3, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -275,8 +288,8 @@ void ui_Menu_Page_screen_init(void)
     lv_obj_set_style_bg_img_recolor_opa(ui_APP5, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Date4 = lv_label_create(ui_Menu_Page);
-    lv_obj_set_width(ui_Date4, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Date4, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_width(ui_Date4, LV_SIZE_CONTENT);  /// 1
+    lv_obj_set_height(ui_Date4, LV_SIZE_CONTENT); /// 1
     lv_obj_set_x(ui_Date4, 0);
     lv_obj_set_y(ui_Date4, -44);
     lv_obj_set_align(ui_Date4, LV_ALIGN_CENTER);
@@ -284,12 +297,17 @@ void ui_Menu_Page_screen_init(void)
     lv_obj_set_style_text_font(ui_Date4, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Time2 = lv_label_create(ui_Menu_Page);
-    lv_obj_set_width(ui_Time2, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Time2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_width(ui_Time2, LV_SIZE_CONTENT);  /// 1
+    lv_obj_set_height(ui_Time2, LV_SIZE_CONTENT); /// 1
     lv_obj_set_x(ui_Time2, 90);
     lv_obj_set_y(ui_Time2, -130);
     lv_obj_set_align(ui_Time2, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Time2, "10:00");
+    HW_DateTimeTypeDef DateTime;
+    HWInterface.RealTimeClock.GetTimeDate(&DateTime);
+    ui_TimeHourValue = DateTime.Hours;
+    ui_TimeMinuteValue = DateTime.Minutes;
+    sprintf(buf, "%2d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
+    lv_label_set_text(ui_Time2, buf);
 
     ui_Image3 = lv_label_create(ui_Menu_Page);
     lv_label_set_text(ui_Image3, LV_SYMBOL_BLUETOOTH);
@@ -298,13 +316,16 @@ void ui_Menu_Page_screen_init(void)
     lv_obj_set_x(ui_Image3, 60);
     lv_obj_set_y(ui_Image3, -130);
     lv_obj_set_align(ui_Image3, LV_ALIGN_CENTER);
-    if (g_bt_icon_visible) {
+    if (g_bt_icon_visible)
+    {
         lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);
-    } else {
+    }
+    else
+    {
         lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);
     }
-    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
-    lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_ADV_HITTEST);  /// Flags
+    lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 
     lv_obj_add_event_cb(ui_APP, ui_event_APP_APP, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_APP2, ui_event_APP2_APP, LV_EVENT_ALL, NULL);
@@ -319,13 +340,13 @@ void ui_Menu_Page_screen_init(void)
 
 void ui_Menu_Page_deinit(void)
 {
-        //删除定时器
-    if(ui_Menu_PageTimer != NULL)
+    // 删除定时器
+    if (ui_Menu_PageTimer != NULL)
     {
         lv_timer_del(ui_Menu_PageTimer);
         ui_Menu_PageTimer = NULL;
-    }    
-	ui_Menu_Page = NULL;
+    }
+    ui_Menu_Page = NULL;
     ui_Bar1 = NULL;
     ui_battery2 = NULL;
     ui_Date3 = NULL;
