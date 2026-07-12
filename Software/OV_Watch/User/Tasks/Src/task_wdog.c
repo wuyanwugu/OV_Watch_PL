@@ -38,7 +38,7 @@ void WDOGFeedTask(void *argument)
     if((wdog_checkin & WDOG_CH_ALL) == WDOG_CH_ALL)
     {
       WDOG_Feed();
-      // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
+     
     }
   }
 }

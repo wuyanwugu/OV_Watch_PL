@@ -11,6 +11,7 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
+extern uint8_t ui_LTimeValue;
 
 /******************************************
 EEPROM Data description:
@@ -18,6 +19,7 @@ EEPROM Data description:
 [0x01]:0xAA for check
 
 [0x10]:wrist_is_enabled
+[0x12]:ui_LTimeValue
 [0x20]:Last Save Day(0-31)
 [0x21]:Day Steps High
 [0x22]:Day Steps Low
@@ -43,6 +45,11 @@ void DataSaveTask(void *argument)
       uint8_t wrist_dat[1];
       wrist_dat[0] = HWInterface.IMU.wrist_is_enabled;
       SettingSave(wrist_dat, 0x10, 1);
+
+      // Save ui_LTimeValue setting
+      uint8_t ltime_dat[1];
+      ltime_dat[0] = ui_LTimeValue;
+      SettingSave(ltime_dat, 0x12, 1);
 
       uint8_t dat[3];
 

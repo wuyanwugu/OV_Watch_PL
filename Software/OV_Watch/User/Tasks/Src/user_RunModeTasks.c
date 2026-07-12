@@ -23,6 +23,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 uint16_t IdleTimerCount = 0;
+extern uint8_t ui_LTimeValue;  // 亮屏超时时间 (秒)，定义在 user_HardwareInitTask.c
 
 /* Private function prototypes -----------------------------------------------*/
 extern void SystemClock_Config(void);
@@ -147,13 +148,18 @@ void IdleTimerCallback(void *argument)
 {
   IdleTimerCount += 1;
 
-  if(IdleTimerCount == 50)
+  // 使用保存的超时时间，若未设置则默认 10 秒
+  uint16_t timeout_sec = (ui_LTimeValue >= 5) ? ui_LTimeValue : 10;
+  uint16_t dim_ticks    = timeout_sec * 5;   // 一半时间暗屏 (1 tick = 100ms)
+  uint16_t stop_ticks   = timeout_sec * 10;  // 超时进入 Stop 模式
+
+  if(IdleTimerCount == dim_ticks)
   {
     uint8_t Idlestr = 0;
     osMessageQueuePut(Idle_MessageQueue, &Idlestr, 0, 1);
   }
 
-  if(IdleTimerCount == 100)
+  if(IdleTimerCount >= stop_ticks)
   {
     uint8_t Stopstr = 1;
     IdleTimerCount = 0;

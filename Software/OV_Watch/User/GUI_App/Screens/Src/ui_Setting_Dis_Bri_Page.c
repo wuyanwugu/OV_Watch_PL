@@ -7,6 +7,7 @@
 #include "../Inc/ui_Setting_Page.h"
 #include "../Inc/ui_Brightness_Page.h"
 #include "HWDataAccess.h"
+#include "user_TasksInit.h"
 #include <stdio.h>
 lv_obj_t * ui_Setting_Dis_Bri_Page = NULL;
 Page_t Page_Setting_Dis_Bri = {ui_Setting_Dis_Bri_Page_screen_init, ui_Setting_Dis_Bri_Page_deinit, &ui_Setting_Dis_Bri_Page};
@@ -23,7 +24,7 @@ lv_obj_t * ui_Label17 = NULL;
 lv_obj_t * ui_Switch1 = NULL;
 lv_obj_t * ui_Label13 = NULL;
 lv_obj_t * ui_Time4 = NULL;
-uint16_t ui_screen_timeout_seconds = 5;//亮屏时间暂存变量
+extern uint8_t ui_LTimeValue;  // 亮屏超时时间 (秒)，定义在 user_HardwareInitTask.c
 
 static lv_timer_t *ui_Setting_Dis_Bri_PageTimer = NULL;
 static uint8_t ui_TimeHourValue = 12;
@@ -77,11 +78,14 @@ void ui_event_Settingcard6(lv_event_t * e)
     if(event_code == LV_EVENT_CLICKED) {
         _ui_flag_modify(ui_Roller3, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
 
-        /* 读取 Roller 当前选择并存储为秒数 */
+        /* 读取 Roller 当前选择并更新亮屏时间 */
         uint16_t idx = lv_roller_get_selected(ui_Roller3);
-        const uint16_t vals[] = {5, 10, 20, 30};
+        const uint8_t vals[] = {5, 10, 20, 30};
         if(idx < (sizeof(vals)/sizeof(vals[0]))) {
-            ui_screen_timeout_seconds = vals[idx];
+            ui_LTimeValue = vals[idx];
+            // 立即保存到 EEPROM
+            uint8_t Datastr = 0;
+            osMessageQueuePut(DataSave_MessageQueue, &Datastr, 0, 1);
         }
 
     }
@@ -98,8 +102,15 @@ void ui_event_Switch1(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
 
-    if(event_code == LV_EVENT_VALUE_CHANGED &&  lv_obj_has_state(target, LV_STATE_CHECKED)) {
-        //(e);
+    if(event_code == LV_EVENT_VALUE_CHANGED) {
+        uint8_t Datastr = 0;
+        if(lv_obj_has_state(target, LV_STATE_CHECKED)) {
+            HWInterface.IMU.WristEnable();
+        } else {
+            HWInterface.IMU.WristDisable();
+        }
+        // 立即保存到 EEPROM
+        osMessageQueuePut(DataSave_MessageQueue, &Datastr, 0, 1);
     }
 }
 
@@ -181,6 +192,19 @@ void ui_Setting_Dis_Bri_Page_screen_init(void)
     lv_obj_set_align(ui_Roller3, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_Roller3, LV_OBJ_FLAG_HIDDEN);     /// Flags
 
+    // 根据已保存的 ui_LTimeValue 设置 roller 初始选中项
+    if(ui_LTimeValue == 5) {
+        lv_roller_set_selected(ui_Roller3, 0, LV_ANIM_OFF);
+    } else if(ui_LTimeValue == 10) {
+        lv_roller_set_selected(ui_Roller3, 1, LV_ANIM_OFF);
+    } else if(ui_LTimeValue == 20) {
+        lv_roller_set_selected(ui_Roller3, 2, LV_ANIM_OFF);
+    } else if(ui_LTimeValue == 30) {
+        lv_roller_set_selected(ui_Roller3, 3, LV_ANIM_OFF);
+    } else {
+        lv_roller_set_selected(ui_Roller3, 1, LV_ANIM_OFF);  // 默认 10S
+    }
+
     ui_Settingcard5 = lv_obj_create(ui_Panel4);
     lv_obj_set_width(ui_Settingcard5, 220);
     lv_obj_set_height(ui_Settingcard5, 70);
@@ -200,6 +224,11 @@ void ui_Setting_Dis_Bri_Page_screen_init(void)
     lv_obj_set_width(ui_Switch1, 50);
     lv_obj_set_height(ui_Switch1, 25);
     lv_obj_set_align(ui_Switch1, LV_ALIGN_RIGHT_MID);
+
+    // 根据当前 wrist_is_enabled 设置开关初始状态
+    if(HWInterface.IMU.wrist_is_enabled) {
+        lv_obj_add_state(ui_Switch1, LV_STATE_CHECKED);
+    }
 
     ui_Label13 = lv_label_create(ui_Setting_Dis_Bri_Page);
     lv_obj_set_width(ui_Label13, LV_SIZE_CONTENT);   /// 1
