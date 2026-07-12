@@ -37,7 +37,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 extern uint8_t HardInt_receive_str[25];
-extern uint8_t ui_LTimeValue;
+uint8_t ui_LTimeValue;
 /* Private function prototypes -----------------------------------------------*/
 void LED_Port_Init(void)
 {

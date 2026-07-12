@@ -151,7 +151,7 @@ void User_Tasks_Init(void)
 	ScrRenewTaskHandle = osThreadNew(ScrRenewTask, NULL, &ScrRenewTask_attributes);
 	SensorTaskHandle = osThreadNew(SensorTask, NULL, &SensorTask_attributes);
 	DataSaveTaskHandle = osThreadNew(DataSaveTask, NULL, &DataSaveTask_attributes);
-	//WDOGFeedTaskHandle = osThreadNew(WDOGFeedTask, NULL, &WDOGFeedTask_attributes);
+	WDOGFeedTaskHandle = osThreadNew(WDOGFeedTask, NULL, &WDOGFeedTask_attributes);
 	ChargCheckTaskHandle = osThreadNew(ChargCheckTask, NULL, &ChargCheckTask_attributes);
 
   /* add events, ... */
@@ -161,7 +161,7 @@ void User_Tasks_Init(void)
 	osMessageQueuePut(HomeUpdata_MessageQueue, &HomeUpdataStr, 0, 1);
 
 	/* enable watchdog after all tasks are created */
-	// WDOG_Enable();  // 由 WDOGFeedTask 在首次签到后启用
+	 WDOG_Enable();  // 由 WDOGFeedTask 在首次签到后启用
 }
 
 
