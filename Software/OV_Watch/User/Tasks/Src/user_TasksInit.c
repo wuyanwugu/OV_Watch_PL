@@ -16,6 +16,7 @@
 #include "user_ScrRenewTask.h"
 #include "user_DataSaveTask.h"
 #include "user_ChargCheckTask.h"
+#include "user_MessageSendTask.h"
 #include "task_wdog.h"
 #include "WDOG.h"
 
@@ -105,6 +106,14 @@ const osThreadAttr_t ChargCheckTask_attributes = {
   .priority = (osPriority_t) osPriorityLow2,
 };
 
+//BLE message send task
+osThreadId_t MessageSendTaskHandle;
+const osThreadAttr_t MessageSendTask_attributes = {
+  .name = "MessageSendTask",
+  .stack_size = 128 * 5,
+  .priority = (osPriority_t) osPriorityLow1,
+};
+
 
 /* Message queues ------------------------------------------------------------*/
 osMessageQueueId_t Key_MessageQueue;
@@ -114,6 +123,7 @@ osMessageQueueId_t IdleBreak_MessageQueue;
 osMessageQueueId_t HomeUpdata_MessageQueue;
 osMessageQueueId_t DataSave_MessageQueue;
 osMessageQueueId_t PageCmd_MessageQueue;
+osEventFlagsId_t HardIntEventHandle;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,6 +152,7 @@ void User_Tasks_Init(void)
 	HomeUpdata_MessageQueue = osMessageQueueNew(1, 1, NULL);
 	DataSave_MessageQueue = osMessageQueueNew(2, 1, NULL);
 	PageCmd_MessageQueue = osMessageQueueNew(2, 1, NULL);
+  HardIntEventHandle = osEventFlagsNew(NULL);
 
 	/* add threads, ... */
   HardwareInitTaskHandle = osThreadNew(HardwareInitTask, NULL, &HardwareInitTask_attributes);
@@ -153,6 +164,7 @@ void User_Tasks_Init(void)
 	DataSaveTaskHandle = osThreadNew(DataSaveTask, NULL, &DataSaveTask_attributes);
 	WDOGFeedTaskHandle = osThreadNew(WDOGFeedTask, NULL, &WDOGFeedTask_attributes);
 	ChargCheckTaskHandle = osThreadNew(ChargCheckTask, NULL, &ChargCheckTask_attributes);
+  MessageSendTaskHandle = osThreadNew(MessageSendTask, NULL, &MessageSendTask_attributes);
 
   /* add events, ... */
 

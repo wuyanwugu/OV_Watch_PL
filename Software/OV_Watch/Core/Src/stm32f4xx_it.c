@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "user_TasksInit.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -203,7 +204,17 @@ void TIM1_UP_TIM10_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-
+  // UART IDLE 中断 — 用于 BLE 模块 AT 指令接收
+  if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE) != RESET)
+  {
+    if(HardIntEventHandle != NULL)
+    {
+      osEventFlagsSet(HardIntEventHandle, HARDINT_EVENT_UART);
+    }
+    __HAL_UART_CLEAR_FLAG(&huart1, UART_FLAG_IDLE);
+    HAL_UART_DMAStop(&huart1);
+    HAL_UART_Receive_DMA(&huart1, HardInt_receive_str, 25);
+  }
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */

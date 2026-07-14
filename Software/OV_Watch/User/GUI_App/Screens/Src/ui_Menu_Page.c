@@ -118,9 +118,13 @@ void ui_event_APP2_APP(lv_event_t * e)
     if(event_code == LV_EVENT_CLICKED) {
         g_bt_icon_visible = lv_obj_has_state(target, LV_STATE_CHECKED);
         if (g_bt_icon_visible) {
+            // 开启蓝牙
+            HWInterface.BLE.Enable();
             lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(ui_Image1, LV_OBJ_FLAG_HIDDEN);
         } else {
+            // 关闭蓝牙
+            HWInterface.BLE.Disable();
             lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(ui_Image1, LV_OBJ_FLAG_HIDDEN);
         }

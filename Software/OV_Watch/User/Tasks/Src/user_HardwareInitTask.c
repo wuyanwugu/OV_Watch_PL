@@ -73,9 +73,9 @@ void HardwareInitTask(void *argument)
       Error_Handler();
     }
 
-    // UART DMA - 暂时不用BLE，注释掉
-    // HAL_UART_Receive_DMA(&huart1, (uint8_t*)HardInt_receive_str, 25);
-    // __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+    // UART DMA - BLE 模块通信
+    HAL_UART_Receive_DMA(&huart1, (uint8_t*)HardInt_receive_str, 25);
+    __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
 
     // BLE Init + Disable — PA8 拉低，防止浮空意外使能 BLE 模块耗电
     HWInterface.BLE.Init();
