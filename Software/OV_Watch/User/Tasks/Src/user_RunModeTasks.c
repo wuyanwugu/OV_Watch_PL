@@ -16,6 +16,7 @@
 #include "../Inc/ui_Brightness_Page.h"
 #include "../Inc/ui_Menu_Page.h"
 #include "MPU6050.h"
+#include "usart.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
