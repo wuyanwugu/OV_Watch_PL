@@ -23,6 +23,9 @@ void WDOG_Port_Init(void)
   GPIO_InitStructure.Pin = WDI_PIN;
   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(WDI_PORT, &GPIO_InitStructure);
+
+  /* 默认禁能看门狗，待 WDOGFeedTask 首次签到后再使能 */
+  WDOG_Disnable();
 }
 
 void WDOG_Enable(void)

@@ -185,11 +185,12 @@ void ui_Menu_Page_screen_init(void)
     lv_obj_set_style_bg_color(ui_Menu_Page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Bar1 = lv_bar_create(ui_Menu_Page);
+    ui_BatteryValue1 = HWInterface.Power.power_remain;
     lv_bar_set_value(ui_Bar1, ui_BatteryValue1, LV_ANIM_OFF);
     lv_bar_set_start_value(ui_Bar1, 0, LV_ANIM_OFF);
     lv_obj_set_width(ui_Bar1, 35);
     lv_obj_set_height(ui_Bar1, 10);
-    lv_obj_set_x(ui_Bar1, -100);
+    lv_obj_set_x(ui_Bar1, -80);
     lv_obj_set_y(ui_Bar1, -130);
     lv_obj_set_align(ui_Bar1, LV_ALIGN_CENTER);
     lv_obj_set_style_bg_color(ui_Bar1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -201,12 +202,12 @@ void ui_Menu_Page_screen_init(void)
     ui_battery2 = lv_label_create(ui_Menu_Page);
     lv_obj_set_width(ui_battery2, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_battery2, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_x(ui_battery2, -62);
+    lv_obj_set_x(ui_battery2, -52);
     lv_obj_set_y(ui_battery2, -130);
     lv_obj_set_align(ui_battery2, LV_ALIGN_CENTER);
-    ui_BatteryValue1 = HWInterface.Power.power_remain;
     sprintf(buf, "%d%%", ui_BatteryValue1);
     lv_label_set_text(ui_battery2, buf);
+    lv_obj_set_style_text_color(ui_battery2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_flag(ui_battery2, LV_OBJ_FLAG_CLICKABLE); /// Flags
 
     ui_Date3 = lv_label_create(ui_Menu_Page);
@@ -217,6 +218,7 @@ void ui_Menu_Page_screen_init(void)
     lv_obj_set_align(ui_Date3, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Date3, "6/15");
     lv_obj_set_style_text_font(ui_Date3, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Date3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Panel2 = lv_obj_create(ui_Menu_Page);
     lv_obj_set_width(ui_Panel2, 240);
@@ -295,11 +297,12 @@ void ui_Menu_Page_screen_init(void)
     lv_obj_set_align(ui_Date4, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Date4, " Sunday");
     lv_obj_set_style_text_font(ui_Date4, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Date4, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Time2 = lv_label_create(ui_Menu_Page);
     lv_obj_set_width(ui_Time2, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_Time2, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_x(ui_Time2, 90);
+    lv_obj_set_x(ui_Time2, 75);
     lv_obj_set_y(ui_Time2, -130);
     lv_obj_set_align(ui_Time2, LV_ALIGN_CENTER);
     HW_DateTimeTypeDef DateTime;
@@ -308,6 +311,7 @@ void ui_Menu_Page_screen_init(void)
     ui_TimeMinuteValue = DateTime.Minutes;
     sprintf(buf, "%2d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
     lv_label_set_text(ui_Time2, buf);
+    lv_obj_set_style_text_color(ui_Time2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image3 = lv_label_create(ui_Menu_Page);
     lv_label_set_text(ui_Image3, LV_SYMBOL_BLUETOOTH);

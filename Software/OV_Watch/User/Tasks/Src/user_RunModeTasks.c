@@ -20,10 +20,11 @@
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
-
+#define DEBUG 1;
 /* Private variables ---------------------------------------------------------*/
-uint16_t IdleTimerCount = 0;
-extern uint8_t ui_LTimeValue;  // 亮屏超时时间 (秒)，定义在 user_HardwareInitTask.c
+static uint16_t IdleTimerCount = 0;
+extern uint8_t ui_LTimeValue; // 亮屏超时时间 (秒)，定义在 user_HardwareInitTask.c
+extern osTimerId_t IdleTimerHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 extern void SystemClock_Config(void);
@@ -31,10 +32,10 @@ extern void SystemClock_Config(void);
 /* Tasks ---------------------------------------------------------------------*/
 
 /**
-  * @brief  Power management task
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Power management task
+ * @param  argument: Not used
+ * @retval None
+ */
 void PowerMgrTask(void *argument)
 {
   uint8_t Idlestr = 0;
@@ -42,39 +43,41 @@ void PowerMgrTask(void *argument)
   uint8_t Stopstr = 0;
   uint8_t HomeUpdataStr = 0;
 
-  while(1)
+  while (1)
   {
     // Light off on idle
-    if(osMessageQueueGet(Idle_MessageQueue, &Idlestr, NULL, 1) == osOK)
+    if (osMessageQueueGet(Idle_MessageQueue, &Idlestr, NULL, 1) == osOK)
     {
       LCD_Set_Light(5);
     }
 
     // Resume light on activity
-    if(osMessageQueueGet(IdleBreak_MessageQueue, &IdleBreakstr, NULL, 1) == osOK)
+    if (osMessageQueueGet(IdleBreak_MessageQueue, &IdleBreakstr, NULL, 1) == osOK)
     {
       IdleTimerCount = 0;
       LCD_Set_Light(brightness);
     }
 
     // Stop mode entry
-    if(osMessageQueueGet(Stop_MessageQueue, &Stopstr, NULL, 0) == osOK)
+    if (osMessageQueueGet(Stop_MessageQueue, &Stopstr, NULL, 0) == osOK)
     {
       uint8_t Wrist_Flag = 0;
 
-      /*************************** 进入休眠前操作 ***************************/
-      sleep:
+    /*************************** 进入休眠前操作 ***************************/
+    sleep:
       IdleTimerCount = 0;
 
       LCD_RES_Clr();
       LCD_Close_Light();
       CST816_Sleep();
 
-    
       /****************************** 进入 Stop 模式 *****************************/
       vTaskSuspendAll();
       WDOG_Disnable();
       CLEAR_BIT(SysTick->CTRL, SysTick_CTRL_TICKINT_Msk);
+#if defined(DEBUG) || defined(_DEBUG)
+      HAL_DBGMCU_EnableDBGStopMode(); // 调试模式下保持 SWD 连接
+#endif
       HAL_PWR_EnterSTOPMode(PWR_MAINREGULATOR_ON, PWR_STOPENTRY_WFI);
 
       // ====== 休眠中 ======
@@ -83,29 +86,30 @@ void PowerMgrTask(void *argument)
       SET_BIT(SysTick->CTRL, SysTick_CTRL_TICKINT_Msk);
       HAL_SYSTICK_Config(SystemCoreClock / (1000U / uwTickFreq));
       SystemClock_Config();
+      osTimerStop(IdleTimerHandle);
       WDOG_Feed();
       xTaskResumeAll();
 
       /****************************** 唤醒判断 *****************************/
       // MPU 抬腕检测
-      if(HWInterface.IMU.wrist_is_enabled)
+      if (HWInterface.IMU.wrist_is_enabled)
       {
         uint8_t hor = MPU_isHorizontal();
-        if(hor && HWInterface.IMU.wrist_state == WRIST_DOWN)
+        if (hor && HWInterface.IMU.wrist_state == WRIST_DOWN)
         {
           HWInterface.IMU.wrist_state = WRIST_UP;
           Wrist_Flag = 1;
         }
-        else if(!hor && HWInterface.IMU.wrist_state == WRIST_UP)
+        else if (!hor && HWInterface.IMU.wrist_state == WRIST_UP)
         {
           HWInterface.IMU.wrist_state = WRIST_DOWN;
           IdleTimerCount = 0;
           goto sleep;
         }
       }
-        
+
       // 判断是否真正唤醒
-      if(!KEY1 || KEY2 || ChargeCheck() || Wrist_Flag)
+      if (!KEY1 || KEY2 || ChargeCheck() || Wrist_Flag)
       {
         Wrist_Flag = 0;
         // 继续恢复
@@ -117,18 +121,19 @@ void PowerMgrTask(void *argument)
       }
 
       /****************************** 恢复外设 *****************************/
+      osTimerStart(IdleTimerHandle, 100);
       LCD_Init();
       LCD_Set_Light(brightness);
       CST816_Wakeup();
 
-      if(ChargeCheck())
+      if (ChargeCheck())
       {
         HardInt_Charg_flag = 1;
       }
 
       // 恢复看门狗
-      WDOG_Port_Init();
-      WDOG_Enable();
+      //      WDOG_Port_Init();
+      //      WDOG_Enable();
 
       // 刷新主页数据
       osMessageQueuePut(HomeUpdata_MessageQueue, &HomeUpdataStr, 0, 1);
@@ -140,36 +145,39 @@ void PowerMgrTask(void *argument)
 }
 
 /**
-  * @brief  Idle timer callback (100ms period)
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Idle timer callback (100ms period)
+ * @param  argument: Not used
+ * @retval None
+ */
 void IdleTimerCallback(void *argument)
 {
   IdleTimerCount += 1;
 
   // 使用保存的超时时间，若未设置则默认 10 秒
   uint16_t timeout_sec = (ui_LTimeValue >= 5) ? ui_LTimeValue : 10;
-  uint16_t dim_ticks    = timeout_sec * 5;   // 一半时间暗屏 (1 tick = 100ms)
-  uint16_t stop_ticks   = timeout_sec * 10;  // 超时进入 Stop 模式
+  uint16_t dim_ticks = timeout_sec * 5;   // 一半时间暗屏 (1 tick = 100ms)
+  uint16_t stop_ticks = timeout_sec * 10; // 超时进入 Stop 模式
 
-  if(IdleTimerCount == dim_ticks)
+  if (IdleTimerCount == dim_ticks)
   {
     uint8_t Idlestr = 0;
     osMessageQueuePut(Idle_MessageQueue, &Idlestr, 0, 1);
   }
 
-  if(IdleTimerCount >= stop_ticks)
+  else if (IdleTimerCount >= stop_ticks)
   {
     uint8_t Stopstr = 1;
     IdleTimerCount = 0;
     osMessageQueuePut(Stop_MessageQueue, &Stopstr, 0, 1);
   }
-	if(g_Sleep)
-	{
-		uint8_t Stopstr = 1;
+  else
+  {
+  }
+  if (g_Sleep)
+  {
+    uint8_t Stopstr = 1;
     IdleTimerCount = 0;
-		g_Sleep = false;
+    g_Sleep = false;
     osMessageQueuePut(Stop_MessageQueue, &Stopstr, 0, 1);
-	}
+  }
 }

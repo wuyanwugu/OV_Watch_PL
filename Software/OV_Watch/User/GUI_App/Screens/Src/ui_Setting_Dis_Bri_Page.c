@@ -238,11 +238,12 @@ void ui_Setting_Dis_Bri_Page_screen_init(void)
     lv_obj_set_y(ui_Label13, 6);
     lv_label_set_text(ui_Label13, "Display & Brightness");
     lv_obj_set_style_text_font(ui_Label13, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label13, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Time4 = lv_label_create(ui_Setting_Dis_Bri_Page);
     lv_obj_set_width(ui_Time4, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Time4, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Time4, -5);
+    lv_obj_set_x(ui_Time4, -15);
     lv_obj_set_y(ui_Time4, 6);
     lv_obj_set_align(ui_Time4, LV_ALIGN_TOP_RIGHT);
     HW_DateTimeTypeDef DateTime;
@@ -252,6 +253,7 @@ void ui_Setting_Dis_Bri_Page_screen_init(void)
     sprintf(buf, "%02d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
     lv_label_set_text(ui_Time4, buf);
     lv_obj_set_style_text_font(ui_Time4, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Time4, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Settingcard8, ui_event_Settingcard8, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_Settingcard6, ui_event_Settingcard6, LV_EVENT_ALL, NULL);

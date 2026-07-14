@@ -54,20 +54,20 @@ uint8_t ui_LTimeValue;
 // }
 
 /**
-  * @brief  hardwares init task
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  hardwares init task
+ * @param  argument: Not used
+ * @retval None
+ */
 void HardwareInitTask(void *argument)
 {
-	while(1)
-	{
+  while (1)
+  {
     vTaskSuspendAll();
 
     //  LED_Port_Init();
-     
+
     // RTC Wake timer
-    if(HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 2000, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
+    if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 2000, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
     {
       Error_Handler();
     }
@@ -90,7 +90,7 @@ void HardwareInitTask(void *argument)
 
     // IMU
     uint8_t num = 3;
-    while(num && HWInterface.IMU.ConnectionError)
+    while (num && HWInterface.IMU.ConnectionError)
     {
       num--;
       HWInterface.IMU.ConnectionError = HWInterface.IMU.Init();
@@ -98,12 +98,12 @@ void HardwareInitTask(void *argument)
 
     // EEPROM - 读取设置和步数
     EEPROM_Init();
-    if(!EEPROM_Check())
+    if (!EEPROM_Check())
     {
       // 读取 wrist_is_enabled 设置
       uint8_t wrist_setting[1];
       SettingGet(wrist_setting, 0x10, 1);
-      if(wrist_setting[0] == 1)
+      if (wrist_setting[0] == 1)
       {
         HWInterface.IMU.wrist_is_enabled = 1;
       }
@@ -115,7 +115,7 @@ void HardwareInitTask(void *argument)
       // 读取常亮时间设置
       uint8_t ltime_setting[1];
       SettingGet(ltime_setting, 0x12, 1);
-      if(ltime_setting[0] >= 10 && ltime_setting[0] <= 60)
+      if (ltime_setting[0] >= 10 && ltime_setting[0] <= 60)
       {
         ui_LTimeValue = ltime_setting[0];
       }
@@ -127,11 +127,11 @@ void HardwareInitTask(void *argument)
       RTC_DateTypeDef nowdate;
       HAL_RTC_GetDate(&hrtc, &nowdate, RTC_FORMAT_BIN);
 
-      if(recbuf[0] == nowdate.Date)
+      if (recbuf[0] == nowdate.Date)
       {
         // 同一天: 从EEPROM恢复步数
         uint16_t steps = (recbuf[1] << 8) | recbuf[2];
-        if(!HWInterface.IMU.ConnectionError)
+        if (!HWInterface.IMU.ConnectionError)
         {
           dmp_set_pedometer_step_count((unsigned long)steps);
         }
@@ -139,7 +139,7 @@ void HardwareInitTask(void *argument)
       else
       {
         // 新的一天: 步数清零
-        if(!HWInterface.IMU.ConnectionError)
+        if (!HWInterface.IMU.ConnectionError)
         {
           dmp_set_pedometer_step_count(0);
         }
@@ -148,7 +148,7 @@ void HardwareInitTask(void *argument)
 
     // AHT21 温湿度传感器
     num = 3;
-    while(num && HWInterface.AHT21.ConnectionError)
+    while (num && HWInterface.AHT21.ConnectionError)
     {
       num--;
       HWInterface.AHT21.ConnectionError = HWInterface.AHT21.Init();
@@ -156,7 +156,7 @@ void HardwareInitTask(void *argument)
 
     // SPL06 气压计
     num = 3;
-    while(num && HWInterface.Barometer.ConnectionError)
+    while (num && HWInterface.Barometer.ConnectionError)
     {
       num--;
       HWInterface.Barometer.ConnectionError = HWInterface.Barometer.Init();
@@ -172,10 +172,10 @@ void HardwareInitTask(void *argument)
     delay_ms(10);
     LCD_Open_Light();
     LCD_Set_Light(80);
-    LCD_ShowString(60, 120, (uint8_t*)"LCD OK!", WHITE, BLACK, 24, 0);
-    LCD_ShowString(34, 160, (uint8_t*)"OV-Watch V2.4.5", WHITE, BLACK, 16, 0);
-    delay_ms(1000);
-    LCD_Fill(0, LCD_H/2-24, LCD_W, LCD_H/2+49, BLACK);
+    LCD_ShowString(60, 120, (uint8_t *)"LCD OK!", WHITE, BLACK, 24, 0);
+    LCD_ShowString(34, 160, (uint8_t *)"OV-Watch V2.4.5", WHITE, BLACK, 16, 0);
+    delay_ms(500);
+    LCD_Fill(0, LCD_H / 2 - 24, LCD_W, LCD_H / 2 + 49, BLACK);
 
     // LVGL init
     lv_init();
@@ -184,6 +184,7 @@ void HardwareInitTask(void *argument)
     ui_init();
 
     xTaskResumeAll();
-		vTaskDelete(NULL);
-	}
+    vTaskDelete(NULL);
+    osDelay(500);
+  }
 }

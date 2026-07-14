@@ -72,6 +72,7 @@ void ui_Application1_Page_screen_init(void)
     lv_obj_set_align(ui_Label23, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label23, "APP");
     lv_obj_set_style_text_font(ui_Label23, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label23, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Scrolldots2 = lv_obj_create(ui_Application1_Page);
     lv_obj_set_width(ui_Scrolldots2, 40);
@@ -136,6 +137,7 @@ void ui_Application1_Page_screen_init(void)
     lv_obj_set_y(ui_Label28, 29);
     lv_obj_set_align(ui_Label28, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label28, "Light");
+    lv_obj_set_style_text_color(ui_Label28, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image9 = lv_label_create(ui_Panel16);
     lv_label_set_text(ui_Image9, "Light");
@@ -166,6 +168,7 @@ void ui_Application1_Page_screen_init(void)
     lv_obj_set_y(ui_Label29, 29);
     lv_obj_set_align(ui_Label29, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label29, "2048");
+    lv_obj_set_style_text_color(ui_Label29, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image13 = lv_label_create(ui_Panel17);
     lv_label_set_text(ui_Image13, "2048");

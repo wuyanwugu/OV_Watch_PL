@@ -102,6 +102,7 @@ void ui_Setting_About_Page_screen_init(void)
     lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT);    /// 1
     lv_label_set_text(ui_Label1, "Device");
     lv_obj_set_style_text_font(ui_Label1, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label5 = lv_label_create(ui_Settingcard7);
     lv_obj_set_width(ui_Label5, LV_SIZE_CONTENT);   /// 1
@@ -110,6 +111,7 @@ void ui_Setting_About_Page_screen_init(void)
     lv_obj_set_y(ui_Label5, 15);
     lv_obj_set_align(ui_Label5, LV_ALIGN_BOTTOM_LEFT);
     lv_label_set_text(ui_Label5, "OV watch");
+    lv_obj_set_style_text_color(ui_Label5, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Settingcard11 = lv_obj_create(ui_Panel8);
     lv_obj_set_width(ui_Settingcard11, 220);
@@ -128,6 +130,7 @@ void ui_Setting_About_Page_screen_init(void)
     lv_obj_set_height(ui_Label6, LV_SIZE_CONTENT);    /// 1
     lv_label_set_text(ui_Label6, "Model Number");
     lv_obj_set_style_text_font(ui_Label6, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label6, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label2 = lv_label_create(ui_Settingcard11);
     lv_obj_set_width(ui_Label2, LV_SIZE_CONTENT);   /// 1
@@ -136,6 +139,7 @@ void ui_Setting_About_Page_screen_init(void)
     lv_obj_set_y(ui_Label2, 15);
     lv_obj_set_align(ui_Label2, LV_ALIGN_BOTTOM_LEFT);
     lv_label_set_text(ui_Label2, "BOT-WB00");
+    lv_obj_set_style_text_color(ui_Label2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Settingcard12 = lv_obj_create(ui_Panel8);
     lv_obj_set_width(ui_Settingcard12, 220);
@@ -154,6 +158,7 @@ void ui_Setting_About_Page_screen_init(void)
     lv_obj_set_height(ui_Label7, LV_SIZE_CONTENT);    /// 1
     lv_label_set_text(ui_Label7, "Version");
     lv_obj_set_style_text_font(ui_Label7, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label7, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label8 = lv_label_create(ui_Settingcard12);
     lv_obj_set_width(ui_Label8, LV_SIZE_CONTENT);   /// 1
@@ -162,6 +167,7 @@ void ui_Setting_About_Page_screen_init(void)
     lv_obj_set_y(ui_Label8, 15);
     lv_obj_set_align(ui_Label8, LV_ALIGN_BOTTOM_LEFT);
     lv_label_set_text(ui_Label8, "1.00");
+    lv_obj_set_style_text_color(ui_Label8, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Settingcard13 = lv_obj_create(ui_Panel8);
     lv_obj_set_width(ui_Settingcard13, 220);
@@ -182,11 +188,12 @@ void ui_Setting_About_Page_screen_init(void)
     lv_obj_set_y(ui_Label4, 6);
     lv_label_set_text(ui_Label4, "About");
     lv_obj_set_style_text_font(ui_Label4, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label4, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Time7 = lv_label_create(ui_Setting_About_Page);
     lv_obj_set_width(ui_Time7, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Time7, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Time7, -5);
+    lv_obj_set_x(ui_Time7, -15);
     lv_obj_set_y(ui_Time7, 6);
     lv_obj_set_align(ui_Time7, LV_ALIGN_TOP_RIGHT);
     HW_DateTimeTypeDef DateTime;
@@ -196,6 +203,7 @@ void ui_Setting_About_Page_screen_init(void)
     sprintf(buf, "%02d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
     lv_label_set_text(ui_Time7, buf);
     lv_obj_set_style_text_font(ui_Time7, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Time7, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Panel8, ui_event_Panel8, LV_EVENT_ALL, NULL);
 

@@ -140,6 +140,7 @@ void ui_App_CompassPage_deinit(void)
     }
     #if HW_USE_LSM303
     HWInterface.Ecompass.Sleep();
+    
     #endif
     ui_App_CompassPage = NULL;
     needle_line = NULL;

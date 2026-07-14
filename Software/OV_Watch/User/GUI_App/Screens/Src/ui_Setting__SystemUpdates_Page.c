@@ -150,11 +150,12 @@ void ui_Setting__SystemUpdates_Page_screen_init(void)
     lv_obj_set_y(ui_Label19, 6);
     lv_label_set_text(ui_Label19, " System&Updates");
     lv_obj_set_style_text_font(ui_Label19, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label19, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Time6 = lv_label_create(ui_Setting__SystemUpdates_Page);
     lv_obj_set_width(ui_Time6, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Time6, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Time6, -5);
+    lv_obj_set_x(ui_Time6, -15);
     lv_obj_set_y(ui_Time6, 6);
     lv_obj_set_align(ui_Time6, LV_ALIGN_TOP_RIGHT);
     HW_DateTimeTypeDef DateTime;
@@ -164,6 +165,7 @@ void ui_Setting__SystemUpdates_Page_screen_init(void)
     sprintf(buf, "%02d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
     lv_label_set_text(ui_Time6, buf);
     lv_obj_set_style_text_font(ui_Time6, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Time6, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Settingcard4, ui_event_Settingcard4, LV_EVENT_ALL, NULL);
     //lv_obj_add_event_cb(ui_Settingcard14, ui_event_Settingcard14, LV_EVENT_ALL, NULL);

@@ -123,6 +123,7 @@ void ui_Time_Count_Page_screen_init(void)
     lv_obj_set_align(ui_Label9, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label9, ":");
     lv_obj_set_style_text_font(ui_Label9, &lv_font_montserrat_40, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label9, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label3 = lv_label_create(ui_Panel9);
     lv_obj_set_width(ui_Label3, LV_SIZE_CONTENT);   /// 1
@@ -132,6 +133,7 @@ void ui_Time_Count_Page_screen_init(void)
     lv_obj_set_align(ui_Label3, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label3, "0");
     lv_obj_set_style_text_font(ui_Label3, &lv_font_montserrat_40, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Button1 = lv_btn_create(ui_Time_Count_Page);
     lv_obj_set_width(ui_Button1, 90);
@@ -150,7 +152,7 @@ void ui_Time_Count_Page_screen_init(void)
     ui_Time9 = lv_label_create(ui_Time_Count_Page);
     lv_obj_set_width(ui_Time9, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Time9, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Time9, -5);
+    lv_obj_set_x(ui_Time9, -15);
     lv_obj_set_y(ui_Time9, 6);
     lv_obj_set_align(ui_Time9, LV_ALIGN_TOP_RIGHT);
     HW_DateTimeTypeDef DateTime;
@@ -160,6 +162,7 @@ void ui_Time_Count_Page_screen_init(void)
     sprintf(buf, "%02d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
     lv_label_set_text(ui_Time9, buf);
     lv_obj_set_style_text_font(ui_Time9, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Time9, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label14 = lv_label_create(ui_Time_Count_Page);
     lv_obj_set_width(ui_Label14, LV_SIZE_CONTENT);   /// 1
@@ -168,6 +171,7 @@ void ui_Time_Count_Page_screen_init(void)
     lv_obj_set_y(ui_Label14, 6);
     lv_label_set_text(ui_Label14, "Stopwatch");
     lv_obj_set_style_text_font(ui_Label14, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label14, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Button5 = lv_btn_create(ui_Time_Count_Page);
     lv_obj_set_width(ui_Button5, 90);

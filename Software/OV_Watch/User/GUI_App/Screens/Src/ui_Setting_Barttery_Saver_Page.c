@@ -116,11 +116,12 @@ void ui_Setting_Barttery_Saver_Page_screen_init(void)
     lv_obj_set_y(ui_Label21, 6);
     lv_label_set_text(ui_Label21, "Battery-Saver Mode");
     lv_obj_set_style_text_font(ui_Label21, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label21, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Time5 = lv_label_create(ui_Setting_Barttery_Saver_Page);
     lv_obj_set_width(ui_Time5, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Time5, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Time5, -5);
+    lv_obj_set_x(ui_Time5, -15);
     lv_obj_set_y(ui_Time5, 6);
     lv_obj_set_align(ui_Time5, LV_ALIGN_TOP_RIGHT);
     HW_DateTimeTypeDef DateTime;
@@ -130,6 +131,7 @@ void ui_Setting_Barttery_Saver_Page_screen_init(void)
     sprintf(buf, "%02d:%02d", ui_TimeHourValue, ui_TimeMinuteValue);
     lv_label_set_text(ui_Time5, buf);
     lv_obj_set_style_text_font(ui_Time5, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Time5, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Switch2, ui_event_Switch2, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_Panel5, ui_event_Panel5, LV_EVENT_ALL, NULL);

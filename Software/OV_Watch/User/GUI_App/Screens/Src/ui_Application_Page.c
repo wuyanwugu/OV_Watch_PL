@@ -100,6 +100,7 @@ void ui_Application_Page_screen_init(void)
     lv_obj_set_align(ui_Label11, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label11, "APP");
     lv_obj_set_style_text_font(ui_Label11, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label11, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Panel10 = lv_obj_create(ui_Application_Page);
     lv_obj_set_width(ui_Panel10, 200);
@@ -132,6 +133,7 @@ void ui_Application_Page_screen_init(void)
     lv_obj_set_y(ui_Label22, 26);
     lv_obj_set_align(ui_Label22, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label22, "Calculator");
+    lv_obj_set_style_text_color(ui_Label22, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image6 = lv_label_create(ui_Panel11);
     lv_label_set_text(ui_Image6, "Calc");
@@ -162,6 +164,7 @@ void ui_Application_Page_screen_init(void)
     lv_obj_set_y(ui_Label25, 26);
     lv_obj_set_align(ui_Label25, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label25, "Compass");
+    lv_obj_set_style_text_color(ui_Label25, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image10 = lv_label_create(ui_Panel13);
     lv_label_set_text(ui_Image10, "Comp");
@@ -192,6 +195,7 @@ void ui_Application_Page_screen_init(void)
     lv_obj_set_y(ui_Label26, 26);
     lv_obj_set_align(ui_Label26, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label26, "Calendar");
+    lv_obj_set_style_text_color(ui_Label26, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image11 = lv_label_create(ui_Panel14);
     lv_label_set_text(ui_Image11, "Cal");
@@ -222,6 +226,7 @@ void ui_Application_Page_screen_init(void)
     lv_obj_set_y(ui_Label27, 26);
     lv_obj_set_align(ui_Label27, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label27, "HeartRate");
+    lv_obj_set_style_text_color(ui_Label27, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image12 = lv_label_create(ui_Panel15);
     lv_label_set_text(ui_Image12, "HR");

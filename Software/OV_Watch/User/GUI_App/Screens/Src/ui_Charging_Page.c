@@ -64,6 +64,7 @@ void ui_Charging_Page_screen_init(void)
     lv_obj_set_align(ui_Label32, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label32, "OFF");
     lv_obj_set_style_text_font(ui_Label32, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label32, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Arc1 = lv_arc_create(ui_Charging_Page);
     lv_obj_set_width(ui_Arc1, 100);
@@ -87,6 +88,7 @@ void ui_Charging_Page_screen_init(void)
     lv_obj_set_align(ui_battery, LV_ALIGN_CENTER);
     lv_label_set_text(ui_battery, "50%");
     lv_obj_set_style_text_font(ui_battery, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_battery, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label33 = lv_label_create(ui_Charging_Page);
     lv_obj_set_width(ui_Label33, LV_SIZE_CONTENT);   /// 1
@@ -96,6 +98,7 @@ void ui_Charging_Page_screen_init(void)
     lv_obj_set_align(ui_Label33, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label33, "Charging...");
     lv_obj_set_style_text_font(ui_Label33, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label33, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Button4, ui_event_Button4, LV_EVENT_ALL, NULL);
   // Timer for battery update

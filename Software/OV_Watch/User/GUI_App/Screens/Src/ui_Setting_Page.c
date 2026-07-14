@@ -188,6 +188,7 @@ void ui_Setting_Page_screen_init(void)
     lv_obj_set_y(ui_Label10, 6);
     lv_label_set_text(ui_Label10, "Setting");
     lv_obj_set_style_text_font(ui_Label10, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_Label10, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     /* Time display: Hour:Minute (top right) */
     HW_DateTimeTypeDef DateTime;
@@ -198,31 +199,34 @@ void ui_Setting_Page_screen_init(void)
     ui_TimeHourLabel = lv_label_create(ui_Setting_Page);
     lv_obj_set_width(ui_TimeHourLabel, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_TimeHourLabel, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_TimeHourLabel, -38);
+    lv_obj_set_x(ui_TimeHourLabel, -48);
     lv_obj_set_y(ui_TimeHourLabel, 6);
     lv_obj_set_align(ui_TimeHourLabel, LV_ALIGN_TOP_RIGHT);
     sprintf(buf, "%02d", ui_TimeHourValue);
     lv_label_set_text(ui_TimeHourLabel, buf);
     lv_obj_set_style_text_font(ui_TimeHourLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_TimeHourLabel, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_TimeColonLabel = lv_label_create(ui_Setting_Page);
     lv_obj_set_width(ui_TimeColonLabel, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_TimeColonLabel, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_TimeColonLabel, -28);
+    lv_obj_set_x(ui_TimeColonLabel, -38);
     lv_obj_set_y(ui_TimeColonLabel, 6);
     lv_obj_set_align(ui_TimeColonLabel, LV_ALIGN_TOP_RIGHT);
     lv_label_set_text(ui_TimeColonLabel, ":");
     lv_obj_set_style_text_font(ui_TimeColonLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_TimeColonLabel, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_TimeMinuteLabel = lv_label_create(ui_Setting_Page);
     lv_obj_set_width(ui_TimeMinuteLabel, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_TimeMinuteLabel, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_TimeMinuteLabel, -5);
+    lv_obj_set_x(ui_TimeMinuteLabel, -15);
     lv_obj_set_y(ui_TimeMinuteLabel, 6);
     lv_obj_set_align(ui_TimeMinuteLabel, LV_ALIGN_TOP_RIGHT);
     sprintf(buf, "%02d", ui_TimeMinuteValue);
     lv_label_set_text(ui_TimeMinuteLabel, buf);
     lv_obj_set_style_text_font(ui_TimeMinuteLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_TimeMinuteLabel, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Settingcard, ui_event_Settingcard_Settingcard, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_Settingcard1, ui_event_Settingcard1_Settingcard, LV_EVENT_ALL, NULL);
