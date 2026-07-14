@@ -37,7 +37,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 extern uint8_t HardInt_receive_str[25];
-uint8_t ui_LTimeValue;
+uint8_t ui_LTimeValue;   // 暗屏时间 (秒)
+uint8_t ui_TTimeValue;   // 熄屏时间 (秒)
 /* Private function prototypes -----------------------------------------------*/
 void LED_Port_Init(void)
 {
@@ -112,12 +113,15 @@ void HardwareInitTask(void *argument)
         HWInterface.IMU.wrist_is_enabled = 0;
       }
 
-      // 读取常亮时间设置
-      uint8_t ltime_setting[1];
-      SettingGet(ltime_setting, 0x12, 1);
-      if(ltime_setting[0] >= 10 && ltime_setting[0] <= 60)
+      // 读取熄屏时间设置 (EEPROM地址 0x12)
+      // ui_TTimeValue = 总亮屏超时(秒), ui_LTimeValue = 暗屏时间 = 一半
+      uint8_t ttime_setting[1];
+      SettingGet(ttime_setting, 0x12, 1);
+      if(ttime_setting[0] >= 5 && ttime_setting[0] <= 60)
       {
-        ui_LTimeValue = ltime_setting[0];
+        ui_TTimeValue = ttime_setting[0];
+        ui_LTimeValue = ui_TTimeValue / 2;   // 暗屏 = 超时一半
+        if(ui_LTimeValue < 5) ui_LTimeValue = 5;  // 最少 5s 暗屏
       }
 
       // 读取步数
