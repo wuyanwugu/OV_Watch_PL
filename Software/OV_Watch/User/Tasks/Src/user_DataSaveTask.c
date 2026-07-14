@@ -11,7 +11,7 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
-extern uint8_t ui_LTimeValue;
+extern uint8_t ui_TTimeValue;  // 熄屏时间(秒)，定义在 user_HardwareInitTask.c
 
 /******************************************
 EEPROM Data description:
@@ -19,7 +19,7 @@ EEPROM Data description:
 [0x01]:0xAA for check
 
 [0x10]:wrist_is_enabled
-[0x12]:ui_LTimeValue
+[0x12]:ui_TTimeValue  (熄屏超时秒数, 5-60)
 [0x20]:Last Save Day(0-31)
 [0x21]:Day Steps High
 [0x22]:Day Steps Low
@@ -46,10 +46,10 @@ void DataSaveTask(void *argument)
       wrist_dat[0] = HWInterface.IMU.wrist_is_enabled;
       SettingSave(wrist_dat, 0x10, 1);
 
-      // Save ui_LTimeValue setting
-      uint8_t ltime_dat[1];
-      ltime_dat[0] = ui_LTimeValue;
-      SettingSave(ltime_dat, 0x12, 1);
+      // Save ui_TTimeValue setting (熄屏超时时间)
+      uint8_t ttime_dat[1];
+      ttime_dat[0] = ui_TTimeValue;
+      SettingSave(ttime_dat, 0x12, 1);
 
       uint8_t dat[3];
 
