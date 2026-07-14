@@ -67,11 +67,14 @@ void PowerMgrTask(void *argument)
       sleep:
       IdleTimerCount = 0;
 
+      // UART 反初始化 — 关闭时钟/DMA/中断，PA9/PA10 复归 (省电关键)
+      HAL_UART_MspDeInit(&huart1);
+
       LCD_RES_Clr();
       LCD_Close_Light();
       CST816_Sleep();
 
-    
+
       /****************************** 进入 Stop 模式 *****************************/
       vTaskSuspendAll();
       WDOG_Disnable();
@@ -118,6 +121,7 @@ void PowerMgrTask(void *argument)
       }
 
       /****************************** 恢复外设 *****************************/
+      HAL_UART_MspInit(&huart1);
       LCD_Init();
       LCD_Set_Light(brightness);
       CST816_Wakeup();
