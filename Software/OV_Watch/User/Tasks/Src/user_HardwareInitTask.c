@@ -77,6 +77,10 @@ void HardwareInitTask(void *argument)
     // HAL_UART_Receive_DMA(&huart1, (uint8_t*)HardInt_receive_str, 25);
     // __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
 
+    // BLE Init + Disable — PA8 拉低，防止浮空意外使能 BLE 模块耗电
+    HWInterface.BLE.Init();
+    HWInterface.BLE.Disable();
+
     // PWM Start - backlight
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
 
