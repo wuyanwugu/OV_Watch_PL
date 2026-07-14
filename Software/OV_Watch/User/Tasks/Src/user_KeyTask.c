@@ -20,7 +20,6 @@
 void KeyTask(void *argument)
 {
 	uint8_t keystr = 0;
-	uint8_t Stopstr = 0;
 	uint8_t IdleBreakstr = 0;
 	while(1)
 	{

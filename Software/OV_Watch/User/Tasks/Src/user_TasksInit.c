@@ -173,7 +173,7 @@ void User_Tasks_Init(void)
 	osMessageQueuePut(HomeUpdata_MessageQueue, &HomeUpdataStr, 0, 1);
 
 	/* enable watchdog after all tasks are created */
-	 WDOG_Enable();  // 由 WDOGFeedTask 在首次签到后启用
+	// WDOG_Enable();  // 由 WDOGFeedTask 在首次签到后启用
 }
 
 

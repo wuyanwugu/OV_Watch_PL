@@ -182,7 +182,7 @@ void HardwareInitTask(void *argument)
     LCD_Set_Light(80);
     LCD_ShowString(60, 120, (uint8_t*)"LCD OK!", WHITE, BLACK, 24, 0);
     LCD_ShowString(34, 160, (uint8_t*)"OV-Watch V2.4.5", WHITE, BLACK, 16, 0);
-    delay_ms(1000);
+    delay_ms(500);
     LCD_Fill(0, LCD_H/2-24, LCD_W, LCD_H/2+49, BLACK);
 
     // LVGL init
@@ -193,5 +193,6 @@ void HardwareInitTask(void *argument)
 
     xTaskResumeAll();
 		vTaskDelete(NULL);
+		
 	}
 }
