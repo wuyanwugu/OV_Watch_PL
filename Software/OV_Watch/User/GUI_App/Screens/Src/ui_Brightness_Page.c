@@ -11,9 +11,9 @@ Page_t Page_Brightness = {ui_Brightness_Page_screen_init, ui_Brightness_Page_dei
 lv_obj_t * ui_Slider1 = NULL;
 lv_obj_t * ui_Image2 = NULL;
 /*ͼƬ*/
-LV_IMG_DECLARE(ui_img_1194381817);    // assets/15A����+.png
+LV_IMG_DECLARE(ui_img_1194381817);    // assets/15A����+.png
 
-int brightness = 0;
+int brightness = 80;  // 默认亮度，匹配启动时的 LCD_Set_Light(80)
 // event funtions
 static void ui_event_Brightness_Page(lv_event_t * e)
 {
