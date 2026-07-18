@@ -123,6 +123,8 @@ void PowerMgrTask(void *argument)
 
       /****************************** 恢复外设 *****************************/
       HAL_UART_MspInit(&huart1);
+      HAL_UART_Receive_DMA(&huart1, (uint8_t*)HardInt_receive_str, 25);
+      __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
       LCD_Init();
       LCD_Set_Light(brightness);
       CST816_Wakeup();
