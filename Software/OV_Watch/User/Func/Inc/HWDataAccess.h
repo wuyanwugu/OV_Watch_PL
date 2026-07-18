@@ -201,6 +201,7 @@ typedef struct
   uint8_t temperature;
   uint8_t humidity;
   uint8_t (*Init)(void);
+  void (*Sleep)(void);
   void (*GetHumiTemp)(float *humi, float *temp);
 } HW_AHT21_InterfaceTypeDef;
 

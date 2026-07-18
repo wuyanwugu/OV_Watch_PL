@@ -6,30 +6,32 @@
 #include "../Inc/ui_Brightness_Page.h"
 #include "../Inc/ui_Menu_Page.h"
 #include "HWDataAccess.h"
-lv_obj_t * ui_Brightness_Page = NULL;
+lv_obj_t *ui_Brightness_Page = NULL;
 Page_t Page_Brightness = {ui_Brightness_Page_screen_init, ui_Brightness_Page_deinit, &ui_Brightness_Page};
-lv_obj_t * ui_Slider1 = NULL;
-lv_obj_t * ui_Image2 = NULL;
+lv_obj_t *ui_Slider1 = NULL;
+lv_obj_t *ui_Image2 = NULL;
 /*ͼƬ*/
-LV_IMG_DECLARE(ui_img_1194381817);    // assets/15A����+.png
+LV_IMG_DECLARE(ui_img_1194381817); // assets/15A����+.png
 
-int brightness = 80;  // 默认亮度，匹配启动时的 LCD_Set_Light(80)
+int brightness = 50; // 默认亮度，匹配启动时的 LCD_Set_Light(50)
 // event funtions
-static void ui_event_Brightness_Page(lv_event_t * e)
+static void ui_event_Brightness_Page(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT) {
+    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT)
+    {
         lv_indev_wait_release(lv_indev_get_act());
         Page_Back(LV_SCR_LOAD_ANIM_MOVE_RIGHT, 250, 0);
     }
 }
 
-static void ui_event_Slider1(lv_event_t * e)
+static void ui_event_Slider1(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if(event_code == LV_EVENT_VALUE_CHANGED) {
+    if (event_code == LV_EVENT_VALUE_CHANGED)
+    {
         brightness = lv_slider_get_value(ui_Slider1);
         // Set screen brightness using HWInterface
         HWInterface.LCD.SetLight(brightness);
@@ -41,16 +43,17 @@ static void ui_event_Slider1(lv_event_t * e)
 void ui_Brightness_Page_screen_init(void)
 {
     ui_Brightness_Page = lv_obj_create(NULL);
-    lv_obj_clear_flag(ui_Brightness_Page, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_clear_flag(ui_Brightness_Page, LV_OBJ_FLAG_SCROLLABLE); /// Flags
     lv_obj_set_style_bg_color(ui_Brightness_Page, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Slider1 = lv_slider_create(ui_Brightness_Page);
     lv_slider_set_value(ui_Slider1, 50, LV_ANIM_OFF);
-    if(lv_slider_get_mode(ui_Slider1) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_Slider1, 0, LV_ANIM_OFF);
+    if (lv_slider_get_mode(ui_Slider1) == LV_SLIDER_MODE_RANGE)
+        lv_slider_set_left_value(ui_Slider1, 0, LV_ANIM_OFF);
     lv_obj_set_width(ui_Slider1, 40);
     lv_obj_set_height(ui_Slider1, 220);
     lv_obj_set_align(ui_Slider1, LV_ALIGN_CENTER);
-    lv_obj_clear_flag(ui_Slider1, LV_OBJ_FLAG_GESTURE_BUBBLE);      /// Flags
+    lv_obj_clear_flag(ui_Slider1, LV_OBJ_FLAG_GESTURE_BUBBLE); /// Flags
     lv_obj_set_style_bg_color(ui_Slider1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_Slider1, 30, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -62,18 +65,16 @@ void ui_Brightness_Page_screen_init(void)
 
     ui_Image2 = lv_img_create(ui_Slider1);
     lv_img_set_src(ui_Image2, &ui_img_1194381817);
-    lv_obj_set_width(ui_Image2, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Image2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_width(ui_Image2, LV_SIZE_CONTENT);  /// 1
+    lv_obj_set_height(ui_Image2, LV_SIZE_CONTENT); /// 1
     lv_obj_set_align(ui_Image2, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
-    lv_obj_clear_flag(ui_Image2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_ADV_HITTEST);  /// Flags
+    lv_obj_clear_flag(ui_Image2, LV_OBJ_FLAG_SCROLLABLE); /// Flags
     lv_obj_set_style_img_recolor(ui_Image2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_img_recolor_opa(ui_Image2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_Slider1, ui_event_Slider1, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_Brightness_Page, ui_event_Brightness_Page, LV_EVENT_ALL, NULL);
-    
-
 }
 
 void ui_Brightness_Page_deinit(void)

@@ -37,8 +37,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 extern uint8_t HardInt_receive_str[25];
-uint8_t ui_LTimeValue;   // 暗屏时间 (秒)
-uint8_t ui_TTimeValue;   // 熄屏时间 (秒)
+uint8_t ui_LTimeValue; // 暗屏时间 (秒)
+uint8_t ui_TTimeValue; // 熄屏时间 (秒)
 /* Private function prototypes -----------------------------------------------*/
 // void LED_Port_Init(void)
 // {
@@ -121,11 +121,12 @@ void HardwareInitTask(void *argument)
       // ui_TTimeValue = 总亮屏超时(秒), ui_LTimeValue = 暗屏时间 = 一半
       uint8_t ttime_setting[1];
       SettingGet(ttime_setting, 0x12, 1);
-      if(ttime_setting[0] >= 5 && ttime_setting[0] <= 60)
+      if (ttime_setting[0] >= 5 && ttime_setting[0] <= 60)
       {
         ui_TTimeValue = ttime_setting[0];
-        ui_LTimeValue = ui_TTimeValue / 2;   // 暗屏 = 超时一半
-        if(ui_LTimeValue < 5) ui_LTimeValue = 5;  // 最少 5s 暗屏
+        ui_LTimeValue = ui_TTimeValue / 2; // 暗屏 = 超时一半
+        if (ui_LTimeValue < 5)
+          ui_LTimeValue = 5; // 最少 5s 暗屏
       }
 
       // 读取步数
@@ -179,7 +180,7 @@ void HardwareInitTask(void *argument)
     LCD_Fill(0, 0, LCD_W, LCD_H, BLACK);
     delay_ms(10);
     LCD_Open_Light();
-    LCD_Set_Light(80);
+    LCD_Set_Light(50);
     LCD_ShowString(60, 120, (uint8_t *)"LCD OK!", WHITE, BLACK, 24, 0);
     LCD_ShowString(34, 160, (uint8_t *)"OV-Watch V2.4.5", WHITE, BLACK, 16, 0);
     delay_ms(500);

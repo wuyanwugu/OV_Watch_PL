@@ -16,6 +16,7 @@
 bool g_bt_icon_visible = false; // 蓝牙flag
 bool g_Sleep = false;           // 熄屏flag
 bool g_flashlight_on = false;   // 手电筒flag
+
 lv_obj_t *ui_Menu_Page = NULL;
 Page_t Page_Menu = {ui_Menu_Page_screen_init, ui_Menu_Page_deinit, &ui_Menu_Page};
 lv_obj_t *ui_Bar1 = NULL;
@@ -120,6 +121,7 @@ void ui_event_APP2_APP(lv_event_t *e)
     if (event_code == LV_EVENT_CLICKED)
     {
         g_bt_icon_visible = lv_obj_has_state(target, LV_STATE_CHECKED);
+
         if (g_bt_icon_visible)
         {
             lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);

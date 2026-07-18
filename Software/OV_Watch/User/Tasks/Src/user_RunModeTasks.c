@@ -24,9 +24,9 @@
 #define DEBUG 1;
 /* Private variables ---------------------------------------------------------*/
 uint16_t IdleTimerCount = 0;
-extern uint8_t ui_LTimeValue;  // 暗屏时间 (秒)，定义在 user_HardwareInitTask.c
-extern uint8_t ui_TTimeValue;  // 熄屏进入Stop时间 (秒)，定义在 user_HardwareInitTask.c
-
+extern uint8_t ui_LTimeValue; // 暗屏时间 (秒)，定义在 user_HardwareInitTask.c
+extern uint8_t ui_TTimeValue; // 熄屏进入Stop时间 (秒)，定义在 user_HardwareInitTask.c
+extern osTimerId_t IdleTimerHandle;
 /* Private function prototypes -----------------------------------------------*/
 extern void SystemClock_Config(void);
 
@@ -74,7 +74,6 @@ void PowerMgrTask(void *argument)
       LCD_RES_Clr();
       LCD_Close_Light();
       CST816_Sleep();
-
 
       /****************************** 进入 Stop 模式 *****************************/
       vTaskSuspendAll();
@@ -138,8 +137,8 @@ void PowerMgrTask(void *argument)
       }
 
       // 恢复看门狗
-      //      WDOG_Port_Init();
-      //      WDOG_Enable();
+      WDOG_Port_Init();
+      WDOG_Enable();
 
       // 刷新主页数据
       osMessageQueuePut(HomeUpdata_MessageQueue, &HomeUpdataStr, 0, 1);
@@ -164,13 +163,13 @@ void IdleTimerCallback(void *argument)
   // 熄屏: 使用 ui_TTimeValue，若未设置则默认 10 秒
   uint8_t ttime = (ui_TTimeValue >= 10) ? ui_TTimeValue : 10;
 
-  if(IdleTimerCount == (ltime * 10))
+  if (IdleTimerCount == (ltime * 10))
   {
     uint8_t Idlestr = 0;
     osMessageQueuePut(Idle_MessageQueue, &Idlestr, 0, 1);
   }
 
-  if(IdleTimerCount == (ttime * 10))
+  if (IdleTimerCount == (ttime * 10))
   {
     uint8_t Stopstr = 1;
     IdleTimerCount = 0;
