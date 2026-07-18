@@ -59,9 +59,9 @@ uint8_t TimeFormat_Get(uint8_t * str)
     if(TimeSetMessage.nowdate.Year > 0 && TimeSetMessage.nowdate.Year < 99
         && TimeSetMessage.nowdate.Month > 0 && TimeSetMessage.nowdate.Month <= 12
         && TimeSetMessage.nowdate.Date > 0 && TimeSetMessage.nowdate.Date <= 31
-        && TimeSetMessage.nowtime.Hours >= 0 && TimeSetMessage.nowtime.Hours <= 23
-        && TimeSetMessage.nowtime.Minutes >= 0 && TimeSetMessage.nowtime.Minutes <= 59
-        && TimeSetMessage.nowtime.Seconds >= 0 && TimeSetMessage.nowtime.Seconds <= 59)
+        && TimeSetMessage.nowtime.Hours <= 23
+        && TimeSetMessage.nowtime.Minutes <= 59
+        && TimeSetMessage.nowtime.Seconds <= 59)
     {
         RTC_SetDate(TimeSetMessage.nowdate.Year, TimeSetMessage.nowdate.Month, TimeSetMessage.nowdate.Date);
         RTC_SetTime(TimeSetMessage.nowtime.Hours, TimeSetMessage.nowtime.Minutes, TimeSetMessage.nowtime.Seconds);

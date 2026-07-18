@@ -121,12 +121,15 @@ void ui_event_APP2_APP(lv_event_t *e)
     if (event_code == LV_EVENT_CLICKED)
     {
         g_bt_icon_visible = lv_obj_has_state(target, LV_STATE_CHECKED);
-        if (g_bt_icon_visible) {
+        if (g_bt_icon_visible)
+        {
             // 开启蓝牙
             HWInterface.BLE.Enable();
             lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(ui_Image1, LV_OBJ_FLAG_HIDDEN);
-        } else {
+        }
+        else
+        {
             // 关闭蓝牙
             HWInterface.BLE.Disable();
             lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_HIDDEN);
@@ -204,7 +207,7 @@ void ui_Menu_Page_screen_init(void)
     ui_battery2 = lv_label_create(ui_Menu_Page);
     lv_obj_set_width(ui_battery2, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_battery2, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_x(ui_battery2, -52);
+    lv_obj_set_x(ui_battery2, -40);
     lv_obj_set_y(ui_battery2, -130);
     lv_obj_set_align(ui_battery2, LV_ALIGN_CENTER);
     sprintf(buf, "%d%%", ui_BatteryValue1);
@@ -319,7 +322,7 @@ void ui_Menu_Page_screen_init(void)
     lv_label_set_text(ui_Image3, LV_SYMBOL_BLUETOOTH);
     lv_obj_set_style_text_font(ui_Image3, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(ui_Image3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_x(ui_Image3, 60);
+    lv_obj_set_x(ui_Image3, 50);
     lv_obj_set_y(ui_Image3, -130);
     lv_obj_set_align(ui_Image3, LV_ALIGN_CENTER);
     if (g_bt_icon_visible)

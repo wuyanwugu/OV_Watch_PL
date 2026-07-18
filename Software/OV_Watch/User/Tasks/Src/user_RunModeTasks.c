@@ -21,12 +21,11 @@
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
-#define DEBUG 1;
+#define DEBUG 0;
 /* Private variables ---------------------------------------------------------*/
 uint16_t IdleTimerCount = 0;
 extern uint8_t ui_LTimeValue; // 暗屏时间 (秒)，定义在 user_HardwareInitTask.c
 extern uint8_t ui_TTimeValue; // 熄屏进入Stop时间 (秒)，定义在 user_HardwareInitTask.c
-extern osTimerId_t IdleTimerHandle;
 /* Private function prototypes -----------------------------------------------*/
 extern void SystemClock_Config(void);
 
@@ -90,7 +89,6 @@ void PowerMgrTask(void *argument)
       SET_BIT(SysTick->CTRL, SysTick_CTRL_TICKINT_Msk);
       HAL_SYSTICK_Config(SystemCoreClock / (1000U / uwTickFreq));
       SystemClock_Config();
-      osTimerStop(IdleTimerHandle);
       WDOG_Feed();
       xTaskResumeAll();
 
@@ -125,9 +123,8 @@ void PowerMgrTask(void *argument)
       }
 
       /****************************** 恢复外设 *****************************/
-      osTimerStart(IdleTimerHandle, 100);
       HAL_UART_MspInit(&huart1);
-      HAL_UART_Receive_DMA(&huart1, (uint8_t*)HardInt_receive_str, 25);
+      HAL_UART_Receive_DMA(&huart1, (uint8_t *)HardInt_receive_str, 25);
       __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
       LCD_Init();
       LCD_Set_Light(brightness);
@@ -176,9 +173,6 @@ void IdleTimerCallback(void *argument)
     uint8_t Stopstr = 1;
     IdleTimerCount = 0;
     osMessageQueuePut(Stop_MessageQueue, &Stopstr, 0, 1);
-  }
-  else
-  {
   }
   if (g_Sleep)
   {

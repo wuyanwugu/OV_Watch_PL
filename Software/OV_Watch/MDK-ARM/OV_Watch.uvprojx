@@ -533,6 +533,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\Tasks\Src\user_ChargCheckTask.c</FilePath>
             </File>
+            <File>
+              <FileName>user_MessageSendTask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\Tasks\Src\user_MessageSendTask.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
