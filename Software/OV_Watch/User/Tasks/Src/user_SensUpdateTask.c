@@ -59,12 +59,7 @@ void SensorTask(void *argument)
         if(WRIST_UP == HWInterface.IMU.wrist_state)
         {
           HWInterface.IMU.wrist_state = WRIST_DOWN;
-          // 放手时在主页，进入Stop模式（暂时注释，调试抬腕唤醒用）
-          // if(Page_Is_Home())
-          // {
-          //   uint8_t Stopstr;
-          //   osMessageQueuePut(Stop_MessageQueue, &Stopstr, 0, 1);
-          // }
+         
         }
         HWInterface.IMU.wrist_state = WRIST_DOWN;
       }

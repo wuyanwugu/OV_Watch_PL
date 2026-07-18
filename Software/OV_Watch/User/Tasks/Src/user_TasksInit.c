@@ -16,6 +16,7 @@
 #include "user_ScrRenewTask.h"
 #include "user_DataSaveTask.h"
 #include "user_ChargCheckTask.h"
+#include "user_MessageSendTask.h"
 #include "task_wdog.h"
 #include "WDOG.h"
 
@@ -101,6 +102,15 @@ const osThreadAttr_t ChargCheckTask_attributes = {
     .priority = (osPriority_t)osPriorityLow2,
 };
 
+//BLE message send task
+osThreadId_t MessageSendTaskHandle;
+const osThreadAttr_t MessageSendTask_attributes = {
+  .name = "MessageSendTask",
+  .stack_size = 128 * 5,
+  .priority = (osPriority_t) osPriorityLow1,
+};
+
+
 /* Message queues ------------------------------------------------------------*/
 osMessageQueueId_t Key_MessageQueue;
 osMessageQueueId_t Idle_MessageQueue;
@@ -109,6 +119,7 @@ osMessageQueueId_t IdleBreak_MessageQueue;
 osMessageQueueId_t HomeUpdata_MessageQueue;
 osMessageQueueId_t DataSave_MessageQueue;
 osMessageQueueId_t PageCmd_MessageQueue;
+osEventFlagsId_t HardIntEventHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 static void LvHandlerTask(void *argument);
@@ -129,24 +140,26 @@ void User_Tasks_Init(void)
   osTimerStart(IdleTimerHandle, 100); // 100ms
 
   /* add queues, ... */
-  Key_MessageQueue = osMessageQueueNew(1, 1, NULL);
-  Idle_MessageQueue = osMessageQueueNew(1, 1, NULL);
-  Stop_MessageQueue = osMessageQueueNew(1, 1, NULL);
-  IdleBreak_MessageQueue = osMessageQueueNew(1, 1, NULL);
-  HomeUpdata_MessageQueue = osMessageQueueNew(1, 1, NULL);
-  DataSave_MessageQueue = osMessageQueueNew(2, 1, NULL);
-  PageCmd_MessageQueue = osMessageQueueNew(2, 1, NULL);
+	Key_MessageQueue = osMessageQueueNew(1, 1, NULL);
+	Idle_MessageQueue = osMessageQueueNew(1, 1, NULL);
+	Stop_MessageQueue = osMessageQueueNew(1, 1, NULL);
+	IdleBreak_MessageQueue = osMessageQueueNew(1, 1, NULL);
+	HomeUpdata_MessageQueue = osMessageQueueNew(1, 1, NULL);
+	DataSave_MessageQueue = osMessageQueueNew(2, 1, NULL);
+	PageCmd_MessageQueue = osMessageQueueNew(2, 1, NULL);
+  HardIntEventHandle = osEventFlagsNew(NULL);
 
   /* add threads, ... */
   HardwareInitTaskHandle = osThreadNew(HardwareInitTask, NULL, &HardwareInitTask_attributes);
   LvHandlerTaskHandle = osThreadNew(LvHandlerTask, NULL, &LvHandlerTask_attributes);
   PowerMgrTaskHandle = osThreadNew(PowerMgrTask, NULL, &PowerMgrTask_attributes);
-  KeyTaskHandle = osThreadNew(KeyTask, NULL, &KeyTask_attributes);
-  ScrRenewTaskHandle = osThreadNew(ScrRenewTask, NULL, &ScrRenewTask_attributes);
-  SensorTaskHandle = osThreadNew(SensorTask, NULL, &SensorTask_attributes);
-  DataSaveTaskHandle = osThreadNew(DataSaveTask, NULL, &DataSaveTask_attributes);
-  WDOGFeedTaskHandle = osThreadNew(WDOGFeedTask, NULL, &WDOGFeedTask_attributes);
-  ChargCheckTaskHandle = osThreadNew(ChargCheckTask, NULL, &ChargCheckTask_attributes);
+	KeyTaskHandle = osThreadNew(KeyTask, NULL, &KeyTask_attributes);
+	ScrRenewTaskHandle = osThreadNew(ScrRenewTask, NULL, &ScrRenewTask_attributes);
+	SensorTaskHandle = osThreadNew(SensorTask, NULL, &SensorTask_attributes);
+	DataSaveTaskHandle = osThreadNew(DataSaveTask, NULL, &DataSaveTask_attributes);
+	WDOGFeedTaskHandle = osThreadNew(WDOGFeedTask, NULL, &WDOGFeedTask_attributes);
+	ChargCheckTaskHandle = osThreadNew(ChargCheckTask, NULL, &ChargCheckTask_attributes);
+  MessageSendTaskHandle = osThreadNew(MessageSendTask, NULL, &MessageSendTask_attributes);
 
   /* add events, ... */
 
@@ -154,8 +167,8 @@ void User_Tasks_Init(void)
   uint8_t HomeUpdataStr;
   osMessageQueuePut(HomeUpdata_MessageQueue, &HomeUpdataStr, 0, 1);
 
-  /* enable watchdog after all tasks are created */
-  // WDOG_Enable(); // 由 WDOGFeedTask 在首次签到后启用
+	/* enable watchdog after all tasks are created */
+	// WDOG_Enable();  // 由 WDOGFeedTask 在首次签到后启用
 }
 
 /**

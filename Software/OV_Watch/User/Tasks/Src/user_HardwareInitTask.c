@@ -73,9 +73,9 @@ void HardwareInitTask(void *argument)
       Error_Handler();
     }
 
-    // UART DMA - 暂时不用BLE，注释掉
-    // HAL_UART_Receive_DMA(&huart1, (uint8_t*)HardInt_receive_str, 25);
-    // __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+    // UART DMA - BLE 模块通信
+    HAL_UART_Receive_DMA(&huart1, (uint8_t*)HardInt_receive_str, 25);
+    __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
 
     // BLE Init + Disable — PA8 拉低，防止浮空意外使能 BLE 模块耗电
     HWInterface.BLE.Init();
@@ -180,11 +180,11 @@ void HardwareInitTask(void *argument)
     LCD_Fill(0, 0, LCD_W, LCD_H, BLACK);
     delay_ms(10);
     LCD_Open_Light();
-    LCD_Set_Light(50);
-    LCD_ShowString(60, 120, (uint8_t *)"LCD OK!", WHITE, BLACK, 24, 0);
-    LCD_ShowString(34, 160, (uint8_t *)"OV-Watch V2.4.5", WHITE, BLACK, 16, 0);
+    LCD_Set_Light(80);
+    LCD_ShowString(60, 120, (uint8_t*)"LCD OK!", WHITE, BLACK, 24, 0);
+    LCD_ShowString(34, 160, (uint8_t*)"OV-Watch V2.4.5", WHITE, BLACK, 16, 0);
     delay_ms(500);
-    LCD_Fill(0, LCD_H / 2 - 24, LCD_W, LCD_H / 2 + 49, BLACK);
+    LCD_Fill(0, LCD_H/2-24, LCD_W, LCD_H/2+49, BLACK);
 
     // LVGL init
     lv_init();
@@ -193,7 +193,7 @@ void HardwareInitTask(void *argument)
     ui_init();
 
     xTaskResumeAll();
-    vTaskDelete(NULL);
-    osDelay(500);
-  }
+		vTaskDelete(NULL);
+		
+	}
 }
