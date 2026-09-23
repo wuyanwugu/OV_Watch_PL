@@ -1,16 +1,9 @@
-# OV-Watch PL — 智能手表复刻项目
-
-基于 [No-Chicken/OV-Watch](https://github.com/No-Chicken/OV-Watch) V2.4.5 开源智能手表的复刻项目，包含硬件设计与固件源码。
-
-> **原作者**: 不吃油炸鸡 (No-Chicken)
-> **版本**: V2.4.5
-> **项目主页**: https://github.com/No-Chicken/OV-Watch
-
+# OV-Watch PL — 智能手表项目
 ---
 
 ## 项目简介
 
-OV-Watch 是一款基于 STM32F411CEU6 的开源智能手表，采用 FreeRTOS 实时操作系统 + LVGL 图形界面框架，驱动 1.69 寸 240x280 ST7789 IPS 屏幕，支持触摸操作。
+OV-Watch 是一款基于 STM32F411CEU6 的智能手表，采用 FreeRTOS 实时操作系统 + LVGL 图形界面框架，驱动 1.69 寸 240x280 ST7789 IPS 屏幕，支持触摸操作。
 
 本项目（OV_Watch_PL）是对其的完整复刻，在原版基础上进行了以下改进：
 
@@ -175,13 +168,3 @@ PCB 设计文件位于 `Hardware/` 目录，使用立创 EDA (EasyEDA) 打开 `.
 
 ---
 
-## 致谢
-
-- **原作者**: [No-Chicken (不吃油炸鸡)](https://github.com/No-Chicken) — OV-Watch 全部硬件与软件设计
-- **开源库**: [LVGL](https://lvgl.io/), [FreeRTOS](https://www.freertos.org/), [STM32 HAL](https://github.com/STMicroelectronics/STM32CubeF4)
-
----
-
-## 许可证
-
-本项目遵循原作者的开源许可。硬件设计与固件源码版权归原作者 [No-Chicken](https://github.com/No-Chicken/OV-Watch) 所有。
